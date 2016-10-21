@@ -3,15 +3,15 @@ Senior Capstone with Jay DeStories, Nick Usoff, and Richard Kim
 
 The high level goal of the project is to find intuitive ways to map music to one or more colors, with the end results being applications that enable more effective learning and more expressive performance. To that end, we hope to use color as feedback to signify information such as probable scale, modality, and pitch.
 
-## Status: 
+## Status 
 - Looking for technical advisor at Bose (they've responded with interest)
 - Completed V1 of Gantt chart using Trello (see deliverables below)
 - Set up documentation and deliverables
 
-## Issue Tracking: 
+## Issue Tracking
 [Github issues](https://github.com/cwRichardKim/soundandcolor/issues)
 
-## Source control: 
+## Source control
 [Github](https://github.com/cwRichardKim/soundandcolor)
 
 # Deliverables
