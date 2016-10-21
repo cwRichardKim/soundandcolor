@@ -8,9 +8,11 @@ The high level goal of the project is to find intuitive ways to map music to one
 - Completed V1 of Gantt chart using Trello (see deliverables below)
 - Set up documentation and deliverables
 
-## Issue Tracking: [Github issues](https://github.com/cwRichardKim/soundandcolor/issues)
+## Issue Tracking: 
+[Github issues](https://github.com/cwRichardKim/soundandcolor/issues)
 
-## Source control: [Github](https://github.com/cwRichardKim/soundandcolor)
+## Source control: 
+[Github](https://github.com/cwRichardKim/soundandcolor)
 
 # Deliverables
 [Week of Oct 17](https://docs.google.com/document/d/1xEKNtifWLqjsb6tFbGj32_Qor5naHP0g0yGgRVi90MA/edit?usp=sharing)
