@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<title>Sound and Color Senior Capstone Project</title>
+	</head>
+
+	<body>
+		<h1>Sound and Color</h1>
+
+		<h2 id="key_stream">
+			placeholder
+		</h2>
+
+
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script>
+			var keys = {
+				"a" : "C",
+				"w" : "C#",
+				"s" : "D",
+				"e" : "D#",
+				"d" : "E",
+				"f" : "F",
+				"t" : "F#",
+				"g" : "G",
+				"y" : "G#",
+				"h" : "A",
+				"u" : "A#",
+				"j" : "B",
+				"k" : "C"
+			}
+
+			var key_list = [];
+
+			var KEYLISTMAX = 10
+
+			function updateKeyList(newKey) {
+				key_list.push(newKey)
+			}
+
+			function keyListToString() {
+				ret_string = ""
+				var start_index = (key_list.length - KEYLISTMAX) < 0 ? 
+					              0 : key_list.length - KEYLISTMAX
+				for (i = start_index; i < key_list.length; i++){
+					ret_string += " " + key_list[i];
+				}
+				console.log(ret_string)
+				return ret_string;
+			}
+
+			function keyPressHandler(e) {
+				if( keys[e.key]){
+					updateKeyList(keys[e.key])
+					$("#key_stream").html(keyListToString())
+				}
+			}
+
+			$("body").keypress(keyPressHandler);
+		</script>
+
+	</body>
+
+
+
+</html>
