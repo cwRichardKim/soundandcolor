@@ -9,6 +9,7 @@
 		</style>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 		<script src="https://d3js.org/d3.v4.min.js"></script>
+        <script src="/js/key_heats.js"></script>
 	</head>
 
 	<body>
@@ -89,6 +90,7 @@
 			function keyPressHandler(e) {
 				if( keys[e.key]){
 					updateKeyList(keys[e.key])
+                    updateHeat(keys[e.key]);
 					$("#key_stream").html(keyListToString())
 				}
 			}
