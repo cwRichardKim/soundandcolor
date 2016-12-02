@@ -1,4 +1,5 @@
-console.log('hello world');
+let DECAY_RATE = -0.001;
+
 var key_heats = {
     "C" : 0.,
 	"C#" : 0.,
@@ -23,8 +24,7 @@ function stripOctave(key) {
 }
 
 function decayHeat(heat, dt) {
-    var k = -.001;
-    return heat * Math.exp(k * dt);
+    return heat * Math.exp(DECAY_RATE * dt);
 }
 
 function updateHeat(octave_key) {
