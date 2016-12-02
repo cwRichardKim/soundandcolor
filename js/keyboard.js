@@ -15,7 +15,7 @@ var svg_keys = [
 	{ id: "octave-2-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "k", stroke: "#555555", fill: "#FFFFF7", x: 560, y: 0, width: 80, height: 400},
 	{ id: "octave-2-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "l", stroke: "#555555", fill: "#FFFFF7", x: 640, y: 0, width: 80, height: 400},
 	{ id: "octave-2-E-key", class: "piano-key white-key", data_key: "E", keyboard_key: ";", stroke: "#555555", fill: "#FFFFF7", x: 720, y: 0, width: 80, height: 400},
-	{ id: "octave-2-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "/'", stroke: "#555555", fill: "#FFFFF7", x: 800, y: 0, width: 80, height: 400},	
+	{ id: "octave-2-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "/'", stroke: "#555555", fill: "#FFFFF7", x: 800, y: 0, width: 80, height: 400},
 	{ id: "octave-2-C#-key", class: "piano-key black-key", data_key: "C#", keyboard_key: "o", stroke: "#555555", fill: "#4B4B4B", x: 620, y: 0, width: 40, height: 280},
 	{ id: "octave-2-D#-key", class: "piano-key black-key", data_key: "D#", keyboard_key: "p", stroke: "#555555", fill: "#4B4B4B", x: 700, y: 0, width: 40, height: 280}
 
@@ -36,24 +36,24 @@ var margin = {top: 40, right: 20, bottom: 30, left: 40},
 			    .attr("width", width + margin.left + margin.right)
 			    .attr("height", height + margin.top + margin.bottom)
 			  .append("g")
-			    .attr("transform", 
+			    .attr("transform",
 					  "translate(" + margin.left + "," + margin.top + ")");
 
 svg.selectAll(".key")
 	  .data(svg_keys)
 	.enter().append("rect")
-	  .attr("class", function(d) { 
+	  .attr("class", function(d) {
 	  	return d.class; })
 	  .attr("id", function(d) { return d.id })
-	  .attr("x", function(d) { 
-	  	return d.x; 
+	  .attr("x", function(d) {
+	  	return d.x;
 	  })
 	  .attr("width", function(d) {
 	  	return d.width;
 	  })
 	  .attr("y", function(d) { return d.y; })
-	  .attr("height", function(d) { 
-	  	return d.height; 
+	  .attr("height", function(d) {
+	  	return d.height;
 	  })
 	  .attr("stroke", function(d) { return d.stroke; })
 	  .attr("fill", function(d) { return d.fill });
@@ -61,27 +61,27 @@ svg.selectAll(".key")
 svg.selectAll(".black-key .white-key")
 	.data(svg_keys)
 	.enter().append("text")
-	.attr("x", function(d) { 
+	.attr("x", function(d) {
 		if(d.class.includes("black-key")){
 			return d.x + 15;
 		}
 		return d.x + 15;
 	})
-	.attr("y", function(d) { 
+	.attr("y", function(d) {
 		if(d.class.includes("black-key")){
 			return d.y + 240;
 		}
-		return d.y + 360; 
+		return d.y + 360;
 	})
 	.attr("font-family", "helvetica")
-	.attr("fill", function(d) { 
+	.attr("fill", function(d) {
 		if(d.class.includes("black-key")){
 			return "white";
 		}
-		return "black"; 
+		return "black";
 	})
-	.text( function (d) { 
-		return d.keyboard_key; 
+	.text( function (d) {
+		return d.keyboard_key;
 	});
 
 
@@ -141,7 +141,7 @@ function findSVGKey(key_name) {
 
 function keyListToString() {
 	ret_string = ""
-	var start_index = (key_list.length - KEYLISTMAX) < 0 ? 
+	var start_index = (key_list.length - KEYLISTMAX) < 0 ?
 		              0 : key_list.length - KEYLISTMAX
 	for (i = start_index; i < key_list.length; i++){
 		if(i == key_list.length - 1){
@@ -156,6 +156,7 @@ function keyListToString() {
 function keyPressHandler(e) {
 	if( keys[e.key]){
 		updateKeyList(keys[e.key])
+		updateHeat(keys[e.key]);
 		$("#key_stream").html(keyListToString())
 	}
 }
@@ -163,5 +164,3 @@ function keyPressHandler(e) {
 var svg = d3.select('#svg-keyboard')
 
 $("body").keypress(keyPressHandler);
-
-
