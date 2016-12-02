@@ -1,107 +1,48 @@
 <html>
 	<head>
 		<title>Sound and Color Senior Capstone Project</title>
-		<style>
-			#currentKey {
-				color: red;
-				background-color: black 
-			}
-		</style>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 		<script src="https://d3js.org/d3.v4.min.js"></script>
-        <script src="/js/key_heats.js"></script>
+		<script src="/js/key_heats.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+		<link rel="stylesheet" href="css/style.css">
 	</head>
 
 	<body>
+	<div class="sc-header">
 		<h1>Sound and Color</h1>
+		<h2><small>A Music Visualization Project</small></h2>
+		<hr/>
+	</div>
+	<div class="container">
+		<p id="key_stream" class ="key-text" contenteditable>
+		</p>
 
-		<h2 id="key_stream" contenteditable>
-			placeholder
-		</h2>
-		<h3>
-			<a href="https://github.com/soundandcolor/soundandcolor">Repository</a> 
-			<a href="https://github.com/soundandcolor/soundandcolor/blob/master/README.md">README</a>
-		</h3>
-
-		<script>
-			var keys = {
-				"a" : "1-C",
-				"w" : "1-C#",
-				"s" : "1-D",
-				"e" : "1-D#",
-				"d" : "1-E",
-				"f" : "1-F",
-				"t" : "1-F#",
-				"g" : "1-G",
-				"y" : "1-G#",
-				"h" : "1-A",
-				"u" : "1-A#",
-				"j" : "1-B",
-				"k" : "2-C",
-				"o" : "2-C#",
-				"l" : "2-D",
-				"p" : "2-D#",
-				";" : "2-E",
-				"'" : "2-F"
-			}
-
-			d3.xml("assets/PianoKeyboard.svg").mimeType("image/svg+xml").get(function(error, xml) {
-			  if (error) throw error;
-			  document.body.appendChild(xml.documentElement);
-			});
-
-			var key_list = [];
-
-			var KEYLISTMAX = 10;
-
-			function updateKeyList(new_key) {
-				
-				key_list.push(new_key)
-				var svg_id = findSVGKey(new_key).replace("#", "\\#")
-				var curr_key = d3.select("#" + svg_id);
-
-				var pre_press_fill = curr_key.attr("fill")
-
-				curr_key
-				.transition().duration(0)
-			      .style("fill", "green")
-			    .transition().duration(1000)
-			      .style("fill", pre_press_fill)
-			}
-
-			function findSVGKey(key_name) {
-				return "octave-" + key_name + "-key";
-			}
-
-			function keyListToString() {
-				ret_string = ""
-				var start_index = (key_list.length - KEYLISTMAX) < 0 ? 
-					              0 : key_list.length - KEYLISTMAX
-				for (i = start_index; i < key_list.length; i++){
-					if(i == key_list.length - 1){
-						ret_string += " <span id='currentKey'>" + key_list[i] + "</span>"
-					} else {
-						ret_string += " " + key_list[i];
-					}
-				}
-				return ret_string;
-			}
-
-			function keyPressHandler(e) {
-				if( keys[e.key]){
-					updateKeyList(keys[e.key])
-                    updateHeat(keys[e.key]);
-					$("#key_stream").html(keyListToString())
-				}
-			}
-
-			var svg = d3.select('#svg-keyboard')
-
-			$("body").keypress(keyPressHandler);
-		</script>
-
+		<div class="row" id="graphs">
+		  	<div class="col-sm-4" id="heat-graph"></div>
+		  	<div class="col-sm-4" id='key-guess'>
+		  		<h1 class=''>A</h1>
+		  	</div>
+		  	<div class="col-sm-4" id="probs-graph"></div>
+		</div>
+	</div>
+	<div class="keyboard-container">
+		<div id="keyboard"></div>
+		<hr/>
+	</div>
+	<p>
+		<a href="https://github.com/soundandcolor/soundandcolor">Repository</a>
+		<a href="https://github.com/soundandcolor/soundandcolor/blob/master/README.md">README</a>
+	</p>
+	<script src="js/heat_graph.js"></script>
+	<script src="js/probs_graph.js"></script>
+	<script src="js/keyboard.js"></script>
 	</body>
-
-
-
 </html>

@@ -1,0 +1,46 @@
+body{
+	background-color: #FFFFFF;
+}
+#currentKey {
+	color: red;
+	background-color: black 
+}
+.sc-header {
+	background-color: #DFDFDF;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 0px;
+	padding-top: 20px;
+	text-align: center;
+
+}
+.sc-header p {
+	margin-bottom: 0px;
+}
+
+.key-text {
+	font-family: "courier new";
+	text-align: right;
+}
+svg {
+	position: relative;
+	left: 50%;
+	-webkit-transform: translateX(-50%);
+	-ms-transform: translateX(-50%);
+	transform: translateX(-50%);
+}
+
+.keyboard-container {
+	margin: 0px;
+	background-color: #D0D0D0;
+}
+
+#key-guess h1{
+	text-align: center;
+	/*font-size: 500%;*/
+}
+
+
+#keyboard {
+	
+}
