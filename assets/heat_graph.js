@@ -23,7 +23,7 @@ var x = d3.scaleBand()
 var y = d3.scaleLinear()
           .range([height, 0]);
 
-var svg = d3.select("#probs-graph").append("svg")
+var svg = d3.select("#heat-graph").append("svg")
 		    .attr("width", width + margin.left + margin.right)
 		    .attr("height", height + margin.top + margin.bottom)
 		  .append("g")
@@ -31,7 +31,7 @@ var svg = d3.select("#probs-graph").append("svg")
 		          "translate(" + margin.left + "," + margin.top + ")");
 
 x.domain(heat_data.map(function(d) { return d.name; }));
-y.domain([0, d3.max(heat_data, function(d) { return d.val; })]);
+	y.domain([0, d3.max(heat_data, function(d) { return d.val; })]);
 
 	svg.selectAll(".bar")
       .data(heat_data)
