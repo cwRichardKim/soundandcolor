@@ -52,17 +52,6 @@ x.domain(heat_data.map(function(d) { return d.name; }));
       	d3.select(this).attr("fill", "black")
       });
 
-// svg.selectAll(".text")
-// 	.data(heat_data)
-// 	.enter().append("text")
-// 	.attr("x", function(d) { return x(d.name) + 2; })
-// 	.attr("y", function(d) { return y(d.val) + 15; })
-// 	.attr("font-family", "helvetica")
-// 	.attr("fill", "white")
-// 	.text( function (d) { if(d.val != 0) 
-// 							return d.val;  
-// 						  return ""});
-
 svg.append("g")
   .attr("transform", "translate(0," + height + ")")
   .attr("font-family", "helvetica")
