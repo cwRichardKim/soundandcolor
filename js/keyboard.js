@@ -155,6 +155,7 @@ function keyListToString() {
 
 function keyPressHandler(e) {
 	if( keys[e.key]){
+		console.log("keypressed")
 		updateKeyList(keys[e.key])
 		updateHeat(keys[e.key]);
 		$("#key_stream").html(keyListToString())

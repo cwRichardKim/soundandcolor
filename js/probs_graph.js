@@ -1,17 +1,17 @@
-var heat_data = [
-	{"name": "C", "val": 0},
-	{"name": "C#", "val": 0},
-	{"name": "D", "val": 0},
-	{"name": "D#", "val": 0},
-	{"name": "E", "val": 0},
-	{"name": "F", "val": 0},
-	{"name": "F#", "val": 0},
-	{"name": "G", "val": 100},
-	{"name": "G#", "val": 0},
-	{"name": "A", "val": 0},
-	{"name": "A#", "val": 0},
-	{"name": "B", "val" : 0}
-]
+// var heat_data = [
+// 	{"name": "C", "val": 0},
+// 	{"name": "C#", "val": 0},
+// 	{"name": "D", "val": 0},
+// 	{"name": "D#", "val": 0},
+// 	{"name": "E", "val": 0},
+// 	{"name": "F", "val": 0},
+// 	{"name": "F#", "val": 0},
+// 	{"name": "G", "val": 100},
+// 	{"name": "G#", "val": 0},
+// 	{"name": "A", "val": 0},
+// 	{"name": "A#", "val": 0},
+// 	{"name": "B", "val" : 0}
+// ]
 
 var margin = {top: 40, right: 20, bottom: 30, left: 40},
 width = 480 - margin.left - margin.right,
@@ -33,10 +33,10 @@ var svg = d3.select("#probs-graph").append("svg")
 x.domain(heat_data.map(function(d) { return d.name; }));
 y.domain([0, d3.max(heat_data, function(d) { return d.val; })]);
 
-	svg.selectAll(".bar")
+	svg.selectAll(".prob_bar")
       .data(heat_data)
     .enter().append("rect")
-      .attr("class", "bar")
+      .attr("class", "prob_bar")
       .attr("x", function(d) { return x(d.name); })
       .attr("width", x.bandwidth())
       .attr("y", function(d) { return y(d.val); })

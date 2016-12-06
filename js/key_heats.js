@@ -39,5 +39,6 @@ function updateHeat(octave_key) {
     if (key_heats[key] > max_heat) {
         key_heats[key] = max_heat;
     }
+    updateHeatPlot(key_heats);
     console.log(key_heats);
 }

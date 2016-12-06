@@ -37,6 +37,10 @@ x.domain(heat_data.map(function(d) { return d.name; }));
       .data(heat_data)
     .enter().append("rect")
       .attr("class", "bar")
+      .attr("id", function(d){ 
+      	var name = d.name.replace("#", "_sharp")
+      	return "bar_" + name
+      })
       .attr("x", function(d) { return x(d.name); })
       .attr("width", x.bandwidth())
       .attr("y", function(d) { return y(d.val); })
@@ -48,18 +52,35 @@ x.domain(heat_data.map(function(d) { return d.name; }));
       	d3.select(this).attr("fill", "black")
       });
 
-svg.selectAll(".text")
-	.data(heat_data)
-	.enter().append("text")
-	.attr("x", function(d) { return x(d.name) + 2; })
-	.attr("y", function(d) { return y(d.val) + 15; })
-	.attr("font-family", "helvetica")
-	.attr("fill", "white")
-	.text( function (d) { if(d.val != 0) 
-							return d.val;  
-						  return ""});
+// svg.selectAll(".text")
+// 	.data(heat_data)
+// 	.enter().append("text")
+// 	.attr("x", function(d) { return x(d.name) + 2; })
+// 	.attr("y", function(d) { return y(d.val) + 15; })
+// 	.attr("font-family", "helvetica")
+// 	.attr("fill", "white")
+// 	.text( function (d) { if(d.val != 0) 
+// 							return d.val;  
+// 						  return ""});
 
 svg.append("g")
   .attr("transform", "translate(0," + height + ")")
   .attr("font-family", "helvetica")
   .call(d3.axisBottom(x));
+
+function updateHeatPlot(weights) {
+	svg.selectAll(".bar").attr("fill", "red");
+	for (var key in weights){
+		var value = weights[key];
+		key = key.replace("#", "_sharp")
+		var selector = "#bar_" + key;
+		// console.log(value)
+		d3.select(selector).attr("height", value * 20)
+
+		var key_bar = d3.select("#bar_" + key)
+		key_bar.attr("height", value * 50)
+		key_bar.attr("y", 230 - (value * 50))
+		// svg.selectAll(".bar").attr("fill", "red")
+	}
+	
+}
