@@ -158,6 +158,7 @@ function keyPressHandler(e) {
 		console.log("keypressed")
 		updateKeyList(keys[e.key])
 		updateHeat(keys[e.key]);
+		majorScaleValues(key_heats);
 		$("#key_stream").html(keyListToString())
 	}
 }

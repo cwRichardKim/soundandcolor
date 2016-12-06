@@ -35,7 +35,9 @@ var major_weights = {
 
 function majorScaleValue(heats, scale) {
     value = 0;
-    for (var key in key_order) {
+    for (var key_i in key_order) {
+        key = key_order[key_i];
+       
         value += heats[key] * major_weights[key_index(key, scale)];
     }
     return value;
@@ -43,8 +45,11 @@ function majorScaleValue(heats, scale) {
 
 function majorScaleValues(heats) {
     values = {};
-    for (var scale in key_order) {
+    for (var scale_i in key_order) {
+        var scale = key_order[scale_i];
         values[scale] = majorScaleValue(heats, scale);
     }
+    console.log(values)
+    updateKeyProbs(values);
     return values;
 }
