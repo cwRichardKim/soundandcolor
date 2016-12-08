@@ -51,5 +51,27 @@ function majorScaleValues(heats) {
     }
     console.log(values)
     updateKeyProbs(values);
+    updateTopKey(values);
     return values;
 }
+
+
+function updateTopKey (key_heats) {
+    console.log(key_heats)
+
+    var top_val = -1
+    var top_key = "";
+
+    for (var key in key_heats) {
+        console.log("key: " + key)
+        console.log("key_heats[key]: " + key_heats[key]);
+        console.log("top_val: " + top_val);
+        if(key_heats[key] > top_val){
+            top_key = key;
+            top_val = key_heats[key];
+        }
+    }
+    console.log("key: " + top_key)
+    $("#key-guess").html("<h1>" + top_key + "</h1>")
+}
+

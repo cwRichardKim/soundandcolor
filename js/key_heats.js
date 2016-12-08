@@ -32,13 +32,18 @@ function updateHeat(octave_key) {
     var timestamp = new Date().getTime();
     var dt = timestamp - prev_timestamp;
     prev_timestamp = timestamp;
+
     for (var k in key_heats) {
         key_heats[k] = decayHeat(key_heats[k], dt);
     }
     key_heats[key] += 1.;
+
     if (key_heats[key] > max_heat) {
         key_heats[key] = max_heat;
     }
+
     updateHeatPlot(key_heats);
-    console.log(key_heats);
+    updateTopKey(key_heats)    
 }
+
+
