@@ -37,19 +37,25 @@ function majorScaleValue(heats, scale) {
     value = 0;
     for (var key_i in key_order) {
         key = key_order[key_i];
-       
-        value += heats[key] * major_weights[key_index(key, scale)];
+        value += heats[key] / (major_weights[key_index(key, scale)]);
     }
-    return value;
+    return 10. / value;
 }
 
 function majorScaleValues(heats) {
     values = {};
+    max_value = 0;
     for (var scale_i in key_order) {
         var scale = key_order[scale_i];
         values[scale] = majorScaleValue(heats, scale);
+        if (values[scale] > max_value) {
+            max_value = values[scale];
+        }
     }
-    console.log(values)
+    for (var scale_i in key_order) {
+        var scale = key_order[scale_i];
+        values[scale] *= (5. / max_value);
+    }
     updateKeyProbs(values);
     return values;
 }
