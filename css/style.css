@@ -44,3 +44,9 @@ svg {
 #keyboard {
 	
 }
+
+.x.axis path {
+	fill: steelblue;
+
+	/*visibility: hidden;*/
+}

@@ -77,5 +77,6 @@ function updateTopKey (key_heats) {
     }
     console.log("key: " + top_key)
     $("#key-guess").html("<h1>" + top_key + "</h1>")
+    $("#keyboard").css("background-color", color_map[top_key]);
 }
 

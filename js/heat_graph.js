@@ -45,12 +45,6 @@ x.domain(heat_data.map(function(d) { return d.name; }));
       .attr("width", x.bandwidth())
       .attr("y", function(d) { return y(d.val); })
       .attr("height", function(d) { return height - y(d.val); })
-      .on("mouseover", function(d){
-      	d3.select(this).attr("fill", "#AA0030")
-      })
-      .on("mouseout", function(){
-      	d3.select(this).attr("fill", "black")
-      });
 
 svg.append("g")
   .attr("transform", "translate(0," + height + ")")
