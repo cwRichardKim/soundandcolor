@@ -14,22 +14,23 @@ var key_data = [
 ]
 
 var color_map = {
-  "C": "rgb(0, 60, 0)",
-  "C#": "rgb(30, 60, 60)",
-  "D": "rgb(60, 60, 60)",
-  "D#": "rgb(60, 60, 60)",
-  "E": "rgb(120, 60, 60)",
-  "F": "rgb(150, 60, 60)",
-  "F#": "rgb(180, 60, 60)",
-  "G": "rgb(210, 60, 60)",
-  "G#": "rgb(240, 60, 60)",
-  "A": "rgb(255, 60, 60)",
-  "A#": "rgb(255, 60, 60)",
-  "B": "rgb(255, 60, 60)"
+  "C": "rgb(40, 0, 120)",
+  "C#": "rgb(50, 20, 110)",
+  "D": "rgb(60, 40, 100)",
+  "D#": "rgb(70, 60, 90)",
+  "E": "rgb(80, 80, 80)",
+  "F": "rgb(90, 100, 70)",
+  "F#": "rgb(100, 120, 60)",
+  "G": "rgb(110, 140, 50)",
+  "G#": "rgb(120, 160, 40)",
+  "A": "rgb(130, 180, 30)",
+  "A#": "rgb(140, 200, 20)",
+  "B": "rgb(150, 220, 10)"
 }
 
-var margin = {top: 40, right: 20, bottom: 30, left: 40},
-width = 480 - margin.left - margin.right,
+var margin = {top: 40, right: 10, bottom: 30, left: 10};
+width = d3.select("#probs-graph").node().getBoundingClientRect().width - margin.left - margin.right;
+// width = 480 - 
 height = 300 - margin.top - margin.bottom;
 
 var x = d3.scaleBand()

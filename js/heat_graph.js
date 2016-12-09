@@ -14,7 +14,8 @@ var heat_data = [
 ]
 
 var margin = {top: 40, right: 20, bottom: 30, left: 40},
-width = 480 - margin.left - margin.right,
+width = d3.select("#heat-graph").node().getBoundingClientRect().width 
+        - margin.left - margin.right;
 height = 300 - margin.top - margin.bottom;
 
 var x = d3.scaleBand()
