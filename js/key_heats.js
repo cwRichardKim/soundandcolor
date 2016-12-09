@@ -18,6 +18,7 @@ var key_heats = {
 var max_heat = 5;
 
 var prev_timestamp = new Date().getTime();
+var curr_key = ""
 
 function stripOctave(key) {
     return key.split('-')[1];
@@ -27,8 +28,7 @@ function decayHeat(heat, dt) {
     return heat * Math.exp(DECAY_RATE * dt);
 }
 
-function updateHeat(octave_key) {
-    var key = stripOctave(octave_key);
+function decayNotes() {
     var timestamp = new Date().getTime();
     var dt = timestamp - prev_timestamp;
     prev_timestamp = timestamp;
@@ -36,6 +36,12 @@ function updateHeat(octave_key) {
     for (var k in key_heats) {
         key_heats[k] = decayHeat(key_heats[k], dt);
     }
+}
+
+function updateHeat(octave_key) {
+    curr_key = octave_key;
+    var key = stripOctave(octave_key);
+    decayNotes();
     key_heats[key] += 1.;
 
     if (key_heats[key] > max_heat) {
@@ -43,7 +49,14 @@ function updateHeat(octave_key) {
     }
 
     updateHeatPlot(key_heats);
-    updateTopKey(key_heats)    
+    // updateTopKey(key_heats)    
 }
+
+setInterval(function(){ 
+    decayNotes();
+    updateHeatPlot(key_heats);
+    // majorScaleValues(key_heats);   
+}, 10);
+
 
 

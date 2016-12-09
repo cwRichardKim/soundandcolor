@@ -43,6 +43,7 @@ function majorScaleValue(heats, scale) {
 }
 
 function majorScaleValues(heats) {
+    console.log(heats)
     values = {};
     max_value = 0;
     for (var scale_i in key_order) {
@@ -69,9 +70,6 @@ function updateTopKey (key_heats) {
     var top_key = "";
 
     for (var key in key_heats) {
-        console.log("key: " + key)
-        console.log("key_heats[key]: " + key_heats[key]);
-        console.log("top_val: " + top_val);
         if(key_heats[key] > top_val){
             top_key = key;
             top_val = key_heats[key];
