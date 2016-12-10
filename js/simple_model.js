@@ -18,26 +18,34 @@ function key_index(key, scale) {
     return (key_indices[key] - key_indices[scale] + 12) % 12;
 }
 
-var major_weights = {
-    0:  1.5,
-    1:  0.05,
-    2:  0.1,
-    3:  0.05,
-    4:  0.6,
-    5:  0.3,
-    6:  0.05,
-    7:  0.8,
-    8:  0.05,
-    9:  0.1,
-    10: 0.05,
-    11: 0.2,
-};
+var simple_key_weights = [1.5, 0.1, 0.6, 0.3, 0.8, 0.1, 0.2];
+var out_of_key_weight = 0.05;
+var major_intervals = [2,2,1,2,2,2,1]
+
+var modalities = ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"];
+
+function mode_weights(mode) {
+    if (typeof(mode_weights.memo) == 'undefined' || 
+        typeof(mode_weights.memo[mode]) == 'undefined') {
+        if (!mode_weights.memo) mode_weights.memo = {};
+        var mode_index = modalities.indexOf(mode);
+        var weight_vector = Array.apply(null, Array(12)).map(Number.prototype.valueOf,
+                                                         out_of_key_weight)
+        var offset = 0;
+        for (var i = 0; i < 7; ++i) {
+            weight_vector[offset] = simple_key_weights[i];
+            offset += major_intervals[(mode_index + i) % 8];
+        }
+        mode_weights.memo[mode] = weight_vector;
+    }
+    return mode_weights.memo[mode];
+}
 
 function majorScaleValue(heats, scale) {
     value = 0;
     for (var key_i in key_order) {
         key = key_order[key_i];
-        value += heats[key] / (major_weights[key_index(key, scale)]);
+        value += heats[key] / (mode_weights("Ionian")[key_index(key, scale)]);
     }
     return 10. / value;
 }
