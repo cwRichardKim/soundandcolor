@@ -41,6 +41,41 @@ function mode_weights(mode) {
     return mode_weights.memo[mode];
 }
 
+function modeScaleValue(heats, mode, scale) {
+    let value = 0;
+    for (var key_i in key_order) {
+        let key = key_order[key_i];
+        value += heats[key] / (mode_weights(mode)[key_index(key, scale)]);
+    }
+    return 10. / value;
+}
+
+// function that returns the mode / scale weights object
+// {"mode: {"scale": weight}
+//
+//
+function modeScaleValues(heats) {
+    let values = {};
+    let max_value = 0;
+    for (var mode in modalities) {
+        values[mode] = {};
+        for (var scale_i in key_order) {
+            var scale = key_order[scale_i];
+            values[mode][scale] = modeScaleValue(heats, mode, scale);
+            if (values[mode][scale] > max_value) {
+                max_value = values[mode][scale];
+            }
+        }
+    }
+    for (var mode in modalities) {
+        for (var scale_i in key_order) {
+            var scale = key_order[scale_i];
+            values[mode][scale] *= (5. / max_value);
+        }
+    }
+    return values;
+}
+
 function majorScaleValue(heats, scale) {
     value = 0;
     for (var key_i in key_order) {
