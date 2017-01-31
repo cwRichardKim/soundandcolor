@@ -57,7 +57,8 @@ function modeScaleValue(heats, mode, scale) {
 function modeScaleValues(heats) {
     let values = {};
     let max_value = 0;
-    for (var mode in modalities) {
+    for (var mode_i in modalities) {
+        let mode = modalities[mode_i];
         values[mode] = {};
         for (var scale_i in key_order) {
             var scale = key_order[scale_i];
@@ -67,7 +68,8 @@ function modeScaleValues(heats) {
             }
         }
     }
-    for (var mode in modalities) {
+    for (var mode_i in modalities) {
+        let mode = modalities[mode_i];
         for (var scale_i in key_order) {
             var scale = key_order[scale_i];
             values[mode][scale] *= (5. / max_value);
