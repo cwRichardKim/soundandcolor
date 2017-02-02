@@ -56,7 +56,7 @@ setInterval(function(){
     decayNotes();
     updateHeatPlot(key_heats);
     // majorScaleValues(key_heats);   
-}, 10);
+}, 20);
 
 
 

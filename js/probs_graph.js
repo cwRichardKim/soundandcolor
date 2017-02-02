@@ -79,6 +79,7 @@ function updateKeyProbs (keys) {
     var value = keys[key];
     if(value > maxValue) {
       maxKey = key;
+      maxValue = value
     }
 
     key = key.replace("#", "_sharp")
@@ -89,5 +90,14 @@ function updateKeyProbs (keys) {
     key_bar.attr("height", value * 50)
     key_bar.attr("y", 230 - (value * 50))
   }
-  $("#keyboard").css("background-color", color_map[maxKey]);
+  var currentBackground = $("#keyboard").css("background-color") 
+
+  var keyboard = d3.select("#keyboard");
+  keyboard
+    .transition().duration(0)
+      .style("background-color", currentBackground)
+    .transition().duration(2000)
+      .style("background-color", color_map[maxKey])
+
+  // $("#keyboard").css("background-color", color_map[maxKey]);
 }
