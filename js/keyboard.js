@@ -153,16 +153,40 @@ function keyListToString() {
 	return ret_string;
 }
 
-function keyPressHandler(e) {
-	if( keys[e.key]){
-		console.log("keypressed")
-		updateKeyList(keys[e.key])
-		updateHeat(keys[e.key]);
+function updatePlayer(new_press, holding) {
+    // hold note longer if it is in holding
+    // process audio here too so we don't get multiple notes for one keydown
+    if (new_press && keys[new_press]) {
+        console.log('made it')
+        updateKeyList(keys[new_press]);
+        updateHeat(keys[new_press]);
 		majorScaleValues(key_heats);
 		$("#key_stream").html(keyListToString())
-	}
+    }
 }
+
 
 var svg = d3.select('#svg-keyboard')
 
-$("body").keypress(keyPressHandler);
+
+function keyPressHandler(e, down) {
+    if (typeof(keyPressHandler.map) === 'undefined') {
+        keyPressHandler.map = {};
+    }
+    console.log(down)
+    console.log(e.key)
+    console.log(keyPressHandler.map)
+    let new_press = !keyPressHandler.map[e.key] && down ? e.key : null;
+    keyPressHandler.map[e.key] = down;
+    updatePlayer(new_press, Object.keys(keyPressHandler.map).filter(function(key) {
+        return keyPressHandler.map[key];            
+    }))
+}
+
+$('body').on('keydown', function(e) {
+    keyPressHandler(e, true)
+})
+
+$('body').on('keyup', function(e) {
+    keyPressHandler(e, false)
+})
