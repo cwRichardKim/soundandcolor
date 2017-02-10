@@ -107,6 +107,23 @@ var keys = {
 	"'" : "2-F"
 }
 
+const MIDIMAP = {
+	48 : "1-C",
+	49 : "1-C#",
+	50 : "1-D",
+	51 : "1-D#",
+	52 : "1-E",
+	53 : "1-F",
+	54 : "1-F#",
+	55 : "1-G",
+	56 : "1-G#",
+	57 : "1-A",
+	58 : "1-A#",
+	59 : "1-B",
+}
+
+
+
 var key_list = [];
 
 var KEYLISTMAX = 10;
@@ -168,6 +185,28 @@ function updatePlayer(new_press, holding) {
 
 var svg = d3.select('#svg-keyboard')
 
+navigator
+  .requestMIDIAccess()
+  .then(
+    midi => {
+      	var FIRST = midi.inputs.values().next().value    
+		FIRST.addEventListener('midimessage', midiHandler)
+    }
+  );
+
+function midiHandler (msg) {
+	if(msg.data[0] == 144){
+		var keyIndex = msg.data[1];
+		var velocity = msg.data[2];
+		var delay = 0;
+
+		if(keyIndex){
+			MIDI.setVolume(0, 100);
+			MIDI.noteOn(0, keyIndex, velocity, delay);
+			MIDI.noteOff(0, keyIndex, delay + 0.75);
+		}
+	}
+}
 
 function keyPressHandler(e, down) {
     if (typeof(keyPressHandler.map) === 'undefined') {
