@@ -11,11 +11,10 @@ var svg = d3.select("#heat-graph").append("svg")
 		    .attr("width", width + margin.left + margin.right)
 		    .attr("height", height + margin.top + margin.bottom)
 		  .append("g")
-		    .attr("transform", 
+		    .attr("transform",
 		          "translate(" + margin.left + "," + margin.top + ")");
 
 function determine_y(mode) {
-	console.log(mode)
 	for (var i in modalities){
 		var m = modalities[i]
 		if(m == mode){
@@ -44,7 +43,6 @@ for (var i = 0; i < (7); i++){
 	svg.append("text").attr("y", determine_y(modalities[i]) + 15).attr("x", -margin.left).text(modalities[i])
 	for (var key_name in key_indices){
 		if(i == 0){
-			console.log(determine_x(key_name))
 			svg.append("text").attr("y", determine_y(modalities[i]) - 10).attr("x", determine_x(key_name) + 10).text(key_name)
 		}
 		heat_values.push({
@@ -60,7 +58,6 @@ svg.selectAll("cells")
       	.enter().append("rect")
       	.attr("x", function(d){return determine_x(d.key_name)})
       	.attr("y", function(d){
-      		console.log(determine_y(d.mode))
       		return determine_y(d.mode)
       	})
       	.style("fill", function(d){
@@ -103,7 +100,7 @@ var heat_data = [
 ]
 
 var margin_k = {top: 40, right: 20, bottom: 30, left: 40},
-width_k = d3.select("#key-graph").node().getBoundingClientRect().width 
+width_k = d3.select("#key-graph").node().getBoundingClientRect().width
         - margin_k.left - margin_k.right;
 height_k = 300 - margin_k.top - margin_k.bottom;
 
@@ -117,7 +114,7 @@ var svg_k = d3.select("#key-graph").append("svg")
 		    .attr("width", width_k + margin_k.left + margin_k.right)
 		    .attr("height", height_k + margin_k.top + margin_k.bottom)
 		  .append("g")
-		    .attr("transform", 
+		    .attr("transform",
 		          "translate(" + margin_k.left + "," + margin_k.top + ")");
 
 x_k.domain(heat_data.map(function(d) { return d.name; }));
@@ -127,7 +124,7 @@ x_k.domain(heat_data.map(function(d) { return d.name; }));
       .data(heat_data)
     .enter().append("rect")
       .attr("class", "bar")
-      .attr("id", function(d){ 
+      .attr("id", function(d){
       	var name = d.name.replace("#", "_sharp")
       	return "bar_" + name
       })

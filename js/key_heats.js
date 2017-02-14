@@ -1,6 +1,7 @@
 let DECAY_RATE = -0.001;
 
 var midi_key_heats = generate_midi_key_heats();
+console.log("asdfasdfasdfasdfasdf");
 
 var key_heats = {
     "C" : 0.,
@@ -25,9 +26,7 @@ var curr_key = ""
 function generate_midi_key_heats() {
   let keys = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
   var heat_map = {};
-  console.log("start");
   for (key in keys) {
-    console.log(key);
     var octaves = {}
     for (i = 1; i < 12; i++) {
       octaves[i] = 0.;
