@@ -41,7 +41,6 @@ function generate_octaved_key_heats() {
 
 function stripNoteOctave(key) {
   let tuple = key.split('-');
-  console.log(tuple);
   return {note: tuple[1], octave:tuple[0]};
 }
 
