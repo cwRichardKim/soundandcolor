@@ -173,9 +173,9 @@ function keyListToString() {
 function updatePlayer(new_key_down, holding) {
   // hold note longer if it is in holding
   // process audio here too so we don't get multiple notes for one keydown
+	updateHeat(new_key_down, holding);
   if (new_key_down) {
     updateKeyList(new_key_down);
-    updateHeat(new_key_down);
 		// majorScaleValues(key_heats);
 		$("#key_stream").html(keyListToString());
   }

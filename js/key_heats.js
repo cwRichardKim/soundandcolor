@@ -50,7 +50,7 @@ function updateTotalHeats() {
     for (var o_i in octaved_key_heats[n_i]) {
       note_heat += octaved_key_heats[n_i][o_i];
     }
-    total_key_heats[n_i] = note_heat;
+    total_key_heats[n_i] = Math.min(note_heat, max_heat);
   }
 }
 
@@ -58,31 +58,34 @@ function decayHeat(heat, dt) {
     return heat * Math.exp(DECAY_RATE * dt);
 }
 
-function decayNotes() {
+function decayNotes(holding) {
+  if (typeof(holding) !== 'undefined') {
+    decayNotes.holding = holding;
+  }
   var timestamp = new Date().getTime();
   var dt = timestamp - prev_timestamp;
   prev_timestamp = timestamp;
 
   for (var n_i in octaved_key_heats) {
     for (var o_i in octaved_key_heats[n_i]) {
-      octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt);
+      if (!decayNotes.holding || !decayNotes.holding.includes(o_i+"-"+n_i)) {
+        octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt);
+      }
     }
   }
   updateTotalHeats();
 }
 
-function updateHeat(octave_key) {
-  let key = stripNoteOctave(octave_key);
-  curr_key = octave_key;
-  decayNotes();
-  octaved_key_heats[key.note][key.octave] += 1.;
+function updateHeat(octave_key, holding) {
+  decayNotes(holding);
+  if (octave_key) {
+    let key = stripNoteOctave(octave_key);
+    curr_key = octave_key;
+    octaved_key_heats[key.note][key.octave] += 1.;
 
-  if (total_key_heats[key] > max_heat) {
-      total_key_heats[key] = max_heat;
+    // updateTopKey(total_key_heats)
   }
-
   updateHeatPlot(total_key_heats);
-  // updateTopKey(total_key_heats)
 }
 
 setInterval(function(){
