@@ -84,7 +84,7 @@ svg.selectAll(".black-key .white-key")
 	});
 
 
-let on_screen_keys = new Set(["1-C","1-C#","1-D","1-D#","1-E","1-F","1-F#","1-G","1-G#","1-A","1-A#","1-B","2-C","2-C#","2-D","2-D#","2-E","2-F"]);
+let on_screen_keys = {"1-C":true,"1-C#":true,"1-D":true,"1-D#":true,"1-E":true,"1-F":true,"1-F#":true,"1-G":true,"1-G#":true,"1-A":true,"1-A#":true,"1-B":true,"2-C":true,"2-C#":true,"2-D":true,"2-D#":true,"2-E":true,"2-F":true};
 var keys = {
 	"a" : "1-C",
 	"w" : "1-C#",
@@ -146,7 +146,6 @@ function updateKeyList(new_key) {
 }
 
 function findSVGKey(key_name) {
-
 	if (!(key_name in on_screen_keys)) {
 		key_name = "1-" + key_name.split("-")[1];
 	}
