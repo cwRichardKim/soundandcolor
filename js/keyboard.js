@@ -107,26 +107,21 @@ var keys = {
 	"'" : "2-F"
 }
 
-const MIDIMAP = {
-	48 : "1-C",
-	49 : "1-C#",
-	50 : "1-D",
-	51 : "1-D#",
-	52 : "1-E",
-	53 : "1-F",
-	54 : "1-F#",
-	55 : "1-G",
-	56 : "1-G#",
-	57 : "1-A",
-	58 : "1-A#",
-	59 : "1-B",
-}
-
-
+const MIDIMAP = generateMIDIMAP();
 
 var key_list = [];
 
 var KEYLISTMAX = 10;
+
+// generates the midi map from 0: 1-C to 120: 12-C
+function generateMIDIMAP() {
+	let notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+	midimap = {};
+	for (i = 0; i <= 120; i++) {
+		midimap[i] =  Math.floor(i/12 - 1).toString() + "-" + notes[i % 12];
+	}
+	return midimap;
+}
 
 function fillToFive(input_str){
 	if(input_str.length > 5){
@@ -170,16 +165,19 @@ function keyListToString() {
 	return ret_string;
 }
 
-function updatePlayer(new_press, holding) {
-    // hold note longer if it is in holding
-    // process audio here too so we don't get multiple notes for one keydown
-    if (new_press && keys[new_press]) {
-        console.log('made it')
-        updateKeyList(keys[new_press]);
-        updateHeat(keys[new_press]);
+// Processes heats and graphs. Does not process sounds. Called every key up and
+// down event. should deal with both keyboard and midi
+// new_key_down: if this is a keydown event, includes the new (musical) key (eg: 2-C)
+// holding: contains all the (musical) keys still playing (eg: 2-C)
+function updatePlayer(new_key_down, holding) {
+  // hold note longer if it is in holding
+  // process audio here too so we don't get multiple notes for one keydown
+  if (new_key_down) {
+    updateKeyList(new_key_down);
+    updateHeat(new_key_down);
 		majorScaleValues(key_heats);
-		$("#key_stream").html(keyListToString())
-    }
+		$("#key_stream").html(keyListToString());
+  }
 }
 
 
@@ -189,43 +187,50 @@ navigator
   .requestMIDIAccess()
   .then(
     midi => {
-      	var FIRST = midi.inputs.values().next().value    
-		FIRST.addEventListener('midimessage', midiHandler)
+    	var FIRST = midi.inputs.values().next().value;
+			FIRST.addEventListener('midimessage', midiHandler);
     }
   );
 
 function midiHandler (msg) {
-	if(msg.data[0] == 144){
-		var keyIndex = msg.data[1];
-		var velocity = msg.data[2];
-		var delay = 0;
+	if (msg.data && msg.data.length >= 3) {
+		let isKeyDown = msg.data[0] == 144;
+		let isKeyUp = msg.data[0] == 128;
 
-		if(keyIndex){
+		let keyIndex = msg.data[1];
+		let note = keyIndex in MIDIMAP ? MIDIMAP[keyIndex] : null;
+		let velocity = msg.data[2];
+		let delay = 0;
+		if(isKeyDown){
 			MIDI.setVolume(0, 100);
 			MIDI.noteOn(0, keyIndex, velocity, delay);
-			MIDI.noteOff(0, keyIndex, delay + 0.75);
+			notePressHandler(note, true);
+		} else if (isKeyUp) {
+			MIDI.noteOff(0, keyIndex, delay);
+			notePressHandler(note, false);
 		}
 	}
 }
 
-function keyPressHandler(e, down) {
-    if (typeof(keyPressHandler.map) === 'undefined') {
-        keyPressHandler.map = {};
-    }
-    console.log(down)
-    console.log(e.key)
-    console.log(keyPressHandler.map)
-    let new_press = !keyPressHandler.map[e.key] && down ? e.key : null;
-    keyPressHandler.map[e.key] = down;
-    updatePlayer(new_press, Object.keys(keyPressHandler.map).filter(function(key) {
-        return keyPressHandler.map[key];            
-    }))
+// updates a dictionary of musical notes (eg: 2-C) with keydown / keyup events
+// should be ambiguous as to where the input comes from (keybaord, MIDI)
+function notePressHandler(note, down) {
+  if (typeof(notePressHandler.map) === 'undefined') {
+    notePressHandler.map = {};
+  }
+  let new_key_down = !notePressHandler.map[note] && down ? note : null;
+  notePressHandler.map[note] = down;
+  updatePlayer(new_key_down, Object.keys(notePressHandler.map).filter(function(key) {
+    return notePressHandler.map[key];
+  }))
 }
 
 $('body').on('keydown', function(e) {
-    keyPressHandler(e, true)
+	let note = e.key in keys ? keys[e.key] : null;
+  notePressHandler(note, true);
 })
 
 $('body').on('keyup', function(e) {
-    keyPressHandler(e, false)
+	let note = e.key in keys ? keys[e.key] : null;
+  notePressHandler(note, false);
 })

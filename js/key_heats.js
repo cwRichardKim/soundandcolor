@@ -1,5 +1,7 @@
 let DECAY_RATE = -0.001;
 
+var midi_key_heats = generate_midi_key_heats();
+
 var key_heats = {
     "C" : 0.,
 	"C#" : 0.,
@@ -19,6 +21,22 @@ var max_heat = 5;
 
 var prev_timestamp = new Date().getTime();
 var curr_key = ""
+
+function generate_midi_key_heats() {
+  let keys = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+  var heat_map = {};
+  console.log("start");
+  for (key in keys) {
+    console.log(key);
+    var octaves = {}
+    for (i = 1; i < 12; i++) {
+      octaves[i] = 0.;
+    }
+    heat_map[key] = octaves;
+  }
+  return heat_map;
+}
+
 
 function stripOctave(key) {
     return key.split('-')[1];
@@ -49,14 +67,11 @@ function updateHeat(octave_key) {
     }
 
     updateHeatPlot(key_heats);
-    // updateTopKey(key_heats)    
+    // updateTopKey(key_heats)
 }
 
-setInterval(function(){ 
+setInterval(function(){
     decayNotes();
     updateHeatPlot(key_heats);
-    // majorScaleValues(key_heats);   
+    // majorScaleValues(key_heats);
 }, 20);
-
-
-
