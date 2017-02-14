@@ -1,10 +1,12 @@
 let DECAY_RATE = -0.001;
 
-var midi_key_heats = generate_midi_key_heats();
-console.log("asdfasdfasdfasdfasdf");
+// heats with incorporated octaves
+// format: {C: {0: 0., 1: 0., ...}, C#: {...}, ...}
+var octaved_key_heats = generate_octaved_key_heats();
+console.log(octaved_key_heats);
 
-var key_heats = {
-    "C" : 0.,
+var total_key_heats = {
+  "C" : 0.,
 	"C#" : 0.,
 	"D" : 0.,
 	"D#" : 0.,
@@ -23,22 +25,35 @@ var max_heat = 5;
 var prev_timestamp = new Date().getTime();
 var curr_key = ""
 
-function generate_midi_key_heats() {
+// generates a map of all keys in all octaves of the format:
+// {C: {0: 0., 1: 0., ...}, C#: {...}, ...}
+function generate_octaved_key_heats() {
   let keys = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
   var heat_map = {};
-  for (key in keys) {
+  for (keyI in keys) {
     var octaves = {}
-    for (i = 1; i < 12; i++) {
+    for (i = -1; i < 10; i++) {
       octaves[i] = 0.;
     }
-    heat_map[key] = octaves;
+    heat_map[keys[keyI]] = octaves;
   }
   return heat_map;
 }
 
+function stripNoteOctave(key) {
+  let tuple = key.split('-');
+  console.log(tuple);
+  return {note: tuple[1], octave:tuple[0]};
+}
 
-function stripOctave(key) {
-    return key.split('-')[1];
+function updateTotalHeats() {
+  for (var n_i in octaved_key_heats) {
+    var note_heat = 0.;
+    for (var o_i in octaved_key_heats[n_i]) {
+      note_heat += octaved_key_heats[n_i][o_i];
+    }
+    total_key_heats[n_i] = note_heat;
+  }
 }
 
 function decayHeat(heat, dt) {
@@ -46,31 +61,34 @@ function decayHeat(heat, dt) {
 }
 
 function decayNotes() {
-    var timestamp = new Date().getTime();
-    var dt = timestamp - prev_timestamp;
-    prev_timestamp = timestamp;
+  var timestamp = new Date().getTime();
+  var dt = timestamp - prev_timestamp;
+  prev_timestamp = timestamp;
 
-    for (var k in key_heats) {
-        key_heats[k] = decayHeat(key_heats[k], dt);
+  for (var n_i in octaved_key_heats) {
+    for (var o_i in octaved_key_heats[n_i]) {
+      octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt);
     }
+  }
+  updateTotalHeats();
 }
 
 function updateHeat(octave_key) {
-    curr_key = octave_key;
-    var key = stripOctave(octave_key);
-    decayNotes();
-    key_heats[key] += 1.;
+  let key = stripNoteOctave(octave_key);
+  curr_key = octave_key;
+  decayNotes();
+  octaved_key_heats[key.note][key.octave] += 1.;
 
-    if (key_heats[key] > max_heat) {
-        key_heats[key] = max_heat;
-    }
+  if (total_key_heats[key] > max_heat) {
+      total_key_heats[key] = max_heat;
+  }
 
-    updateHeatPlot(key_heats);
-    // updateTopKey(key_heats)
+  updateHeatPlot(total_key_heats);
+  // updateTopKey(total_key_heats)
 }
 
 setInterval(function(){
     decayNotes();
-    updateHeatPlot(key_heats);
-    // majorScaleValues(key_heats);
+    updateHeatPlot(total_key_heats);
+    // majorScaleValues(total_key_heats);
 }, 20);
