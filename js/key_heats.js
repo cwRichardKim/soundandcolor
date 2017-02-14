@@ -3,7 +3,6 @@ let DECAY_RATE = -0.001;
 // heats with incorporated octaves
 // format: {C: {0: 0., 1: 0., ...}, C#: {...}, ...}
 var octaved_key_heats = generate_octaved_key_heats();
-console.log(octaved_key_heats);
 
 var total_key_heats = {
   "C" : 0.,
