@@ -84,7 +84,7 @@ svg.selectAll(".black-key .white-key")
 	});
 
 
-
+let on_screen_keys = new Set(["1-C","1-C#","1-D","1-D#","1-E","1-F","1-F#","1-G","1-G#","1-A","1-A#","1-B","2-C","2-C#","2-D","2-D#","2-E","2-F"]);
 var keys = {
 	"a" : "1-C",
 	"w" : "1-C#",
@@ -133,10 +133,9 @@ function fillToFive(input_str){
 }
 
 function updateKeyList(new_key) {
-	key_list.push(new_key)
-	var svg_id = findSVGKey(new_key).replace("#", "\\#")
+	key_list.push(new_key);
+	var svg_id = findSVGKey(new_key).replace("#", "\\#");
 	var curr_key = d3.select("#" + svg_id);
-
 	var pre_press_fill = curr_key.attr("fill")
 
 	curr_key
@@ -147,6 +146,10 @@ function updateKeyList(new_key) {
 }
 
 function findSVGKey(key_name) {
+
+	if (!(key_name in on_screen_keys)) {
+		key_name = "1-" + key_name.split("-")[1];
+	}
 	return "octave-" + key_name + "-key";
 }
 
@@ -174,7 +177,7 @@ function updatePlayer(new_key_down, holding) {
   if (new_key_down) {
     updateKeyList(new_key_down);
     updateHeat(new_key_down);
-		majorScaleValues(key_heats);
+		// majorScaleValues(key_heats);
 		$("#key_stream").html(keyListToString());
   }
 }
