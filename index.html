@@ -41,6 +41,9 @@
 		<hr/>
 	</div>
 	<div class="container">
+		<div id="controls">
+
+		</div>
 
 		</p>
 
@@ -60,10 +63,31 @@
 		<a href="https://github.com/soundandcolor/soundandcolor">Repository</a>
 		<a href="https://github.com/soundandcolor/soundandcolor/blob/master/README.md">README</a>
 	</p>
-  <script src="js/simple_model.js"></script>
+    <script src="js/simple_model.js"></script>
 	<script src="js/key_heats.js"></script>
 	<script src="js/heat_graph.js"></script>
 	<script src="js/probs_graph.js"></script>
 	<script src="js/keyboard.js"></script>
+	<script>
+		function createKeyWeightSlider(keyIndex, keyValue) {
+			return '<div class="block">' + 
+				'<span class="label">' + keyIndex + '</span>' + 
+				'<span class="label" id="s' + keyIndex + '-valText">' + keyValue + '</span>' + 
+				'<input min="0" max="3.0" step=".1" value=' + keyValue + ' type="range" class="control-slider" id="s' + keyIndex + '">' + 
+			'</div>'
+		}
+		simple_key_weights.forEach(function (d, i) {
+			$("#controls").append( createKeyWeightSlider(i, d));
+		})
+
+		$('.control-slider').on("change", function() {
+    		var val = $(this).val();
+    		$("#" + $(this).attr('id') + "-valText").html(val);
+
+ 			var keyIndex = Number($(this).attr("id").replace("s", ""));
+ 			simple_key_weights[keyIndex] = Number(val);
+ 			console.log(simple_key_weights);
+		});
+	</script>
 	</body>
 </html>

@@ -22,6 +22,14 @@ var simple_key_weights = [1.5, 0.1, 0.6, 0.3, 0.8, 0.1, 0.2];
 var out_of_key_weight = 0.05;
 var major_intervals = [2,2,1,2,2,2,1]
 
+function set_simple_key_weights(updated_key_weights) {
+    simple_key_weights = updated_key_weights;
+}
+
+function set_out_of_key_weight(updated_out_of_key_weight) {
+    out_of_key_weight = updated_out_of_key_weight;
+}
+
 var modalities = ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"];
 
 function mode_weights(mode) {

@@ -1,3 +1,5 @@
+
+
 body{
 	background-color: #FFFFFF;
 }
@@ -5,6 +7,33 @@ body{
 	color: red;
 	background-color: black 
 }
+
+input[type=range].control-slider {
+	width:400px;
+}
+
+input {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display:inline-block;
+    *display: inline;     /* for IE7*/
+    zoom:1;              /* for IE7*/
+    vertical-align:middle;
+    margin-left:20px;
+    width:400px;
+}
+
+.label {
+    display:inline-block;
+    *display: inline;     /* for IE7*/
+    zoom:1;              /* for IE7*/
+    float: left;
+    padding-top: 5px;
+    text-align: center;
+    width: 100px;
+    color:black;
+}
+
 .sc-header {
 	background-color: #DFDFDF;
 	margin-left: 0px;
