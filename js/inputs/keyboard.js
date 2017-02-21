@@ -213,6 +213,19 @@ function midiHandler (msg) {
 	}
 }
 
+let listeners = [];
+function callListeners(new_key, key_down, held_keys) {
+    for (let i = 0; i < listeners.length; ++i) {
+        listeners[i](new_key, key_down, held_keys);
+    }
+}
+
+function addListener() {
+    for (let i = 0; i < arguments.length; ++i) {
+        listeners.push(arguments[i]);
+    }
+}
+
 // updates a dictionary of musical notes (eg: 2-C) with keydown / keyup events
 // should be ambiguous as to where the input comes from (keybaord, MIDI)
 function notePressHandler(note, down) {
@@ -221,9 +234,8 @@ function notePressHandler(note, down) {
   }
   let new_key_down = !notePressHandler.map[note] && down ? note : null;
   notePressHandler.map[note] = down;
-  updatePlayer(new_key_down, Object.keys(notePressHandler.map).filter(function(key) {
-    return notePressHandler.map[key];
-  }))
+  callListeners(note, down, Object.keys(notePressHandler.map)
+          .filter(key => notePressHandler.map[key]));
 }
 
 $('body').on('keydown', function(e) {
@@ -235,3 +247,7 @@ $('body').on('keyup', function(e) {
 	let note = e.key in keys ? keys[e.key] : null;
   notePressHandler(note, false);
 })
+
+module.exports = {
+    addListener: addListener
+}
