@@ -1,0 +1,25 @@
+{
+  "name": "soundandcolor",
+  "version": "1.0.0",
+  "description": "Senior Capstone with Jay DeStories, Nick Usoff, and Richard Kim",
+  "main": "n/a",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soundandcolor/soundandcolor.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/soundandcolor/soundandcolor/issues"
+  },
+  "homepage": "https://github.com/soundandcolor/soundandcolor#readme",
+  "dependencies": {
+    "browserify": "^14.1.0"
+  },
+  "devDependencies": {
+    "babelify": "^7.3.0"
+  }
+}
