@@ -1,3 +1,14 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+const keyboard = require('./js/inputs/keyboard');
+const midi_sound = require('./js/ui/midi_sound');
+
+$(document).ready(() => {
+    keyboard.initialize();
+    midi_sound.initialize();
+    keyboard.addListener(midi_sound.keyEvent);
+});
+
+},{"./js/inputs/keyboard":2,"./js/ui/midi_sound":3}],2:[function(require,module,exports){
 /*var svg_keys = [
 	{ id: "octave-1-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "a", stroke: "#555555", fill: "#FFFFF7", x: 0, y: 0, width: 80, height: 400},
 	{ id: "octave-1-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "s", stroke: "#555555", fill: "#FFFFF7", x: 80, y: 0, width: 80, height: 400},
@@ -194,67 +205,106 @@ function midiHandler (msg) {
 */
 
 var keys = {
-	"a" : "3-C",
-	"w" : "3-C#",
-	"s" : "3-D",
-	"e" : "3-D#",
-	"d" : "3-E",
-	"f" : "3-F",
-	"t" : "3-F#",
-	"g" : "3-G",
-	"y" : "3-G#",
-	"h" : "3-A",
-	"u" : "3-A#",
-	"j" : "3-B",
-	"k" : "4-C",
-	"o" : "4-C#",
-	"l" : "4-D",
-	"p" : "4-D#",
-	";" : "4-E",
-	"'" : "4-F"
-}
-
+	"a": "3-C",
+	"w": "3-C#",
+	"s": "3-D",
+	"e": "3-D#",
+	"d": "3-E",
+	"f": "3-F",
+	"t": "3-F#",
+	"g": "3-G",
+	"y": "3-G#",
+	"h": "3-A",
+	"u": "3-A#",
+	"j": "3-B",
+	"k": "4-C",
+	"o": "4-C#",
+	"l": "4-D",
+	"p": "4-D#",
+	";": "4-E",
+	"'": "4-F"
+};
 
 let listeners = [];
 function callListeners(new_key, is_key_down, held_keys) {
-    for (let i = 0; i < listeners.length; ++i) {
-        listeners[i](new_key, is_key_down, held_keys);
-    }
+	for (let i = 0; i < listeners.length; ++i) {
+		listeners[i](new_key, is_key_down, held_keys);
+	}
 }
 
 function addListener() {
-    for (let i = 0; i < arguments.length; ++i) {
-        listeners.push(arguments[i]);
-    }
+	for (let i = 0; i < arguments.length; ++i) {
+		listeners.push(arguments[i]);
+	}
 }
 
 // updates a dictionary of musical notes (eg: 2-C) with keydown / keyup events
 // should be ambiguous as to where the input comes from (keybaord, MIDI)
 function notePressHandler(note, down) {
-    if (typeof(notePressHandler.map) === 'undefined') {
-        notePressHandler.map = {};
-    }
-    let new_key_down = !notePressHandler.map[note] && down ? note : null;
-    notePressHandler.map[note] = down;
-    if (new_key_down || !down) {
-        callListeners(note, down, Object.keys(notePressHandler.map)
-                .filter(key => notePressHandler.map[key]));
-    }
+	if (typeof notePressHandler.map === 'undefined') {
+		notePressHandler.map = {};
+	}
+	let new_key_down = !notePressHandler.map[note] && down ? note : null;
+	notePressHandler.map[note] = down;
+	if (new_key_down || !down) {
+		callListeners(note, down, Object.keys(notePressHandler.map).filter(key => notePressHandler.map[key]));
+	}
 }
 
 function initialize() {
-    $('body').on('keydown', function(e) {
-        let note = e.key in keys ? keys[e.key] : null;
-        notePressHandler(note, true);
-    })
-    
-    $('body').on('keyup', function(e) {
-        let note = e.key in keys ? keys[e.key] : null;
-        notePressHandler(note, false);
-    })
+	$('body').on('keydown', function (e) {
+		let note = e.key in keys ? keys[e.key] : null;
+		notePressHandler(note, true);
+	});
+
+	$('body').on('keyup', function (e) {
+		let note = e.key in keys ? keys[e.key] : null;
+		notePressHandler(note, false);
+	});
 }
 
 module.exports = {
-    addListener,
-    initialize,
+	addListener,
+	initialize
+};
+
+},{}],3:[function(require,module,exports){
+function generateMIDIMAP() {
+    let notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    midimap = {};
+    for (i = 0; i <= 120; i++) {
+        midimap[Math.floor(i / 12 - 1).toString() + "-" + notes[i % 12]] = i;
+    }
+    return midimap;
 }
+
+const delay = 0; // play one note every quarter second
+const note = 50; // the MIDI note
+const velocity = 127; // how hard the note hits
+
+const key_note_map = generateMIDIMAP();
+
+function initialize() {
+    MIDI.loadPlugin({
+        soundfontUrl: "js/midi/",
+        instrument: "acoustic_grand_piano",
+        onsuccess: function () {
+            MIDI.setVolume(0, 100);
+        }
+    });
+}
+
+function keyEvent(new_key, is_key_down, held_keys, new_velocity = velocity, new_delay = delay) {
+    if (is_key_down) {
+        MIDI.noteOn(0, key_note_map[new_key], new_velocity, new_delay);
+    } else {
+        MIDI.noteOff(0, key_note_map[new_key], new_delay);
+    }
+}
+
+module.exports = {
+    initialize,
+    keyEvent
+};
+
+},{}]},{},[1]);

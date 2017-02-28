@@ -1,47 +1,41 @@
-
-key_note_map = {
-	"a": 48,
-	"w": 49,
-	"s": 50,
-	"e": 51,
-	"d": 52,
-	"f": 53,
-	"t": 54,
-	"g": 55,
-	"y": 56,
-	"h": 57,
-	"u": 58,
-	"j": 59,
-	"k": 60,
-	"o": 61,
-	"l": 62,
-	"p": 63,
-	";": 64,
-	"'": 65
+function generateMIDIMAP() {
+    let notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+    midimap = {};
+    for (i = 0; i <= 120; i++) {
+        midimap[Math.floor(i/12 - 1).toString() + "-" + notes[i % 12]] = i;
+    }
+    return midimap;
 }
 
-window.onload = function () {
-	MIDI.loadPlugin({
-		soundfontUrl: "js/midi/",
-		instrument: "acoustic_grand_piano",
-		onprogress: function(state, progress) {
-			console.log(state, progress);
-		},
-		onsuccess: function() {
-			var delay = 0; // play one note every quarter second
-			var note = 50; // the MIDI note
-			var velocity = 127; // how hard the note hits
-			// play the note
-			$()
-			
+const delay = 0; // play one note every quarter second
+const note = 50; // the MIDI note
+const velocity = 127; // how hard the note hits
 
-			$("body").keypress(function(e){
-				if(key_note_map[e.key]){
-					MIDI.setVolume(0, 100);
-					MIDI.noteOn(0, key_note_map[e.key], velocity, delay);
-					MIDI.noteOff(0, note, delay + 0.75);
-				}
-			});
-		}
-	});
-};
+const key_note_map = generateMIDIMAP();
+
+function initialize() {
+    MIDI.loadPlugin({
+        soundfontUrl: "js/midi/",
+        instrument: "acoustic_grand_piano",
+        onsuccess: function() {
+            MIDI.setVolume(0, 100);
+        }
+    });
+}
+
+function keyEvent(new_key,
+                  is_key_down,
+                  held_keys,
+                  new_velocity=velocity,
+                  new_delay=delay) {
+    if (is_key_down) {
+        MIDI.noteOn(0, key_note_map[new_key], new_velocity, new_delay);
+    } else {
+        MIDI.noteOff(0, key_note_map[new_key], new_delay);
+    }
+}
+
+module.exports = {
+    initialize,
+    keyEvent
+}
