@@ -1,13 +1,36 @@
-var CELL_WIDTH = 35;
-var CELL_HEIGHT = 35;
-
-var margin = {top: 40, right: 0, bottom: 30, left: 80},
-width = 500;
-height = 300 - margin.top - margin.bottom;
+// In the process of refactoring this file into a module
 
 
+const CELL_WIDTH = 35;
+const CELL_HEIGHT = 35;
+const modalities = ["Ionian",
+                    "Dorian",
+                    "Phrygian",
+                    "Lydian",
+                    "Mixolydian",
+                    "Aeolian",
+                    "Locrian"];
+const key_indices = {
+    "C": 0,
+    "C#": 1,
+    "D": 2,
+    "D#": 3,
+    "E": 4,
+    "F": 5,
+    "F#": 6,
+    "G": 7,
+    "G#": 8,
+    "A": 9,
+    "A#": 10,
+    "B": 11
+}
+const margin = {top: 40, right: 0, bottom: 30, left: 80},
+const width = 500;
+const height = 300 - margin.top - margin.bottom;
 
-var svg = d3.select("#heat-graph").append("svg")
+
+
+let svg = d3.select("#heat-graph").append("svg")
 		    .attr("width", width + margin.left + margin.right)
 		    .attr("height", height + margin.top + margin.bottom)
 		  .append("g")
@@ -38,20 +61,24 @@ function determine_color(v){
 
 
 
-var heat_values = []
-for (var i = 0; i < (7); i++){
-	svg.append("text").attr("y", determine_y(modalities[i]) + 15).attr("x", -margin.left).text(modalities[i])
-	for (var key_name in key_indices){
-		if(i == 0){
-			svg.append("text").attr("y", determine_y(modalities[i]) - 10).attr("x", determine_x(key_name) + 10).text(key_name)
-		}
-		heat_values.push({
-			"key_name" : key_name,
-			"mode" : modalities[i],
-			"weight" : 0
-		})
-	}
+function generate_heat_values() {
+    let ret = [];
+    for (var i = 0; i < (7); i++){
+    	svg.append("text").attr("y", determine_y(modalities[i]) + 15).attr("x", -margin.left).text(modalities[i])
+    	for (var key_name in key_indices){
+    		if(i == 0){
+    			svg.append("text").attr("y", determine_y(modalities[i]) - 10).attr("x", determine_x(key_name) + 10).text(key_name)
+    		}
+    		ret.push({
+    			"key_name" : key_name,
+    			"mode" : modalities[i],
+    			"weight" : 0
+    		})
+    	}
+    }
+    return ret;
 }
+let heat_values = generate_heat_values();
 
 svg.selectAll("cells")
       	.data(heat_values)
@@ -99,18 +126,18 @@ var heat_data = [
 	{"name": "B", "val" : 0}
 ]
 
-var margin_k = {top: 40, right: 20, bottom: 30, left: 40},
-width_k = d3.select("#key-graph").node().getBoundingClientRect().width
+let margin_k = {top: 40, right: 20, bottom: 30, left: 40},
+let width_k = d3.select("#key-graph").node().getBoundingClientRect().width
         - margin_k.left - margin_k.right;
-height_k = 300 - margin_k.top - margin_k.bottom;
+let height_k = 300 - margin_k.top - margin_k.bottom;
 
-var x_k = d3.scaleBand()
+let x_k = d3.scaleBand()
           .range([0, width_k])
           .padding(0.1);
-var y_k = d3.scaleLinear()
+let y_k = d3.scaleLinear()
           .range([height_k, 0]);
 
-var svg_k = d3.select("#key-graph").append("svg")
+let svg_k = d3.select("#key-graph").append("svg")
 		    .attr("width", width_k + margin_k.left + margin_k.right)
 		    .attr("height", height_k + margin_k.top + margin_k.bottom)
 		  .append("g")

@@ -1,5 +1,5 @@
-var key_order = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
-var key_indices = {
+const key_order = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
+const key_indices = {
     "C": 0,
     "C#": 1,
     "D": 2,
@@ -18,11 +18,17 @@ function key_index(key, scale) {
     return (key_indices[key] - key_indices[scale] + 12) % 12;
 }
 
-var simple_key_weights = [1.5, 0.1, 0.6, 0.3, 0.8, 0.1, 0.2];
-var out_of_key_weight = 0.05;
-var major_intervals = [2,2,1,2,2,2,1]
+let simple_key_weights = [1.5, 0.1, 0.6, 0.3, 0.8, 0.1, 0.2];
+let out_of_key_weight = 0.05;
+const major_intervals = [2,2,1,2,2,2,1]
 
-var modalities = ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"];
+const modalities = ["Ionian",
+                    "Dorian",
+                    "Phrygian",
+                    "Lydian",
+                    "Mixolydian",
+                    "Aeolian",
+                    "Locrian"];
 
 function mode_weights(mode) {
     if (typeof(mode_weights.memo) == 'undefined' || 
@@ -78,36 +84,11 @@ function modeScaleValues(heats) {
     return values;
 }
 
-function majorScaleValue(heats, scale) {
-    value = 0;
-    for (var key_i in key_order) {
-        key = key_order[key_i];
-        value += heats[key] / (mode_weights("Ionian")[key_index(key, scale)]);
-    }
-    return 10. / value;
+module.exports = {
+    modeScaleValues
 }
 
-function majorScaleValues(heats) {
-    console.log(heats)
-    values = {};
-    max_value = 0;
-    for (var scale_i in key_order) {
-        var scale = key_order[scale_i];
-        values[scale] = majorScaleValue(heats, scale);
-        if (values[scale] > max_value) {
-            max_value = values[scale];
-        }
-    }
-    for (var scale_i in key_order) {
-        var scale = key_order[scale_i];
-        values[scale] *= (5. / max_value);
-    }
-    updateKeyProbs(values);
-    updateTopKey(values);
-    return values;
-}
-
-
+/*
 function updateTopKey (key_heats) {
     console.log(key_heats)
 
@@ -125,3 +106,4 @@ function updateTopKey (key_heats) {
     $("#keyboard").css("background-color", color_map[top_key]);
 }
 
+*/

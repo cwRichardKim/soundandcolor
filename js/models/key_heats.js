@@ -1,11 +1,11 @@
-let DECAY_RATE = -0.001;
+const DECAY_RATE = -0.001;
 
 // heats with incorporated octaves
 // format: {C: {0: 0., 1: 0., ...}, C#: {...}, ...}
-var octaved_key_heats = generate_octaved_key_heats();
+let octaved_key_heats = generate_octaved_key_heats();
 
-var total_key_heats = {
-  "C" : 0.,
+let total_key_heats = {
+    "C" : 0.,
 	"C#" : 0.,
 	"D" : 0.,
 	"D#" : 0.,
@@ -19,10 +19,9 @@ var total_key_heats = {
 	"B" : 0.,
 };
 
-var max_heat = 5;
+const max_heat = 5;
 
-var prev_timestamp = new Date().getTime();
-var curr_key = ""
+let prev_timestamp = new Date().getTime();
 
 // generates a map of all keys in all octaves of the format:
 // {C: {0: 0., 1: 0., ...}, C#: {...}, ...}
@@ -76,20 +75,21 @@ function decayNotes(holding) {
   updateTotalHeats();
 }
 
-function updateHeat(octave_key, holding) {
+function updateHeat(octave_key, is_key_down, holding) {
   decayNotes(holding);
-  if (octave_key) {
+  if (octave_key && is_key_down) {
     let key = stripNoteOctave(octave_key);
-    curr_key = octave_key;
     octaved_key_heats[key.note][key.octave] += 1.;
-
-    // updateTopKey(total_key_heats)
   }
-  updateHeatPlot(total_key_heats);
+  //updateHeatPlot(total_key_heats);
 }
 
 setInterval(function(){
     decayNotes();
-    updateHeatPlot(total_key_heats);
-    // majorScaleValues(total_key_heats);
+    //updateHeatPlot(total_key_heats);
 }, 20);
+
+module.exports = {
+    updateHeat,
+    getTotalHeats: () => total_key_heats
+}

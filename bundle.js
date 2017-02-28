@@ -1,14 +1,18 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 const keyboard = require('./js/inputs/keyboard');
 const midi_sound = require('./js/ui/midi_sound');
+const key_heats = require('./js/models/key_heats');
+const simple_model = require('./js/models/simple_model');
 
 $(document).ready(() => {
     keyboard.initialize();
     midi_sound.initialize();
     keyboard.addListener(midi_sound.keyEvent);
+    keyboard.addListener(key_heats.updateHeat);
+    keyboard.addListener(() => console.log(simple_model.modeScaleValues(key_heats.getTotalHeats())));
 });
 
-},{"./js/inputs/keyboard":2,"./js/ui/midi_sound":3}],2:[function(require,module,exports){
+},{"./js/inputs/keyboard":2,"./js/models/key_heats":3,"./js/models/simple_model":4,"./js/ui/midi_sound":5}],2:[function(require,module,exports){
 /*var svg_keys = [
 	{ id: "octave-1-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "a", stroke: "#555555", fill: "#FFFFF7", x: 0, y: 0, width: 80, height: 400},
 	{ id: "octave-1-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "s", stroke: "#555555", fill: "#FFFFF7", x: 80, y: 0, width: 80, height: 400},
@@ -269,6 +273,206 @@ module.exports = {
 };
 
 },{}],3:[function(require,module,exports){
+const DECAY_RATE = -0.001;
+
+// heats with incorporated octaves
+// format: {C: {0: 0., 1: 0., ...}, C#: {...}, ...}
+let octaved_key_heats = generate_octaved_key_heats();
+
+let total_key_heats = {
+  "C": 0.,
+  "C#": 0.,
+  "D": 0.,
+  "D#": 0.,
+  "E": 0.,
+  "F": 0.,
+  "F#": 0.,
+  "G": 0.,
+  "G#": 0.,
+  "A": 0.,
+  "A#": 0.,
+  "B": 0.
+};
+
+const max_heat = 5;
+
+let prev_timestamp = new Date().getTime();
+
+// generates a map of all keys in all octaves of the format:
+// {C: {0: 0., 1: 0., ...}, C#: {...}, ...}
+function generate_octaved_key_heats() {
+  let keys = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  var heat_map = {};
+  for (keyI in keys) {
+    var octaves = {};
+    for (i = -1; i < 10; i++) {
+      octaves[i] = 0.;
+    }
+    heat_map[keys[keyI]] = octaves;
+  }
+  return heat_map;
+}
+
+function stripNoteOctave(key) {
+  let tuple = key.split('-');
+  return { note: tuple[1], octave: tuple[0] };
+}
+
+function updateTotalHeats() {
+  for (var n_i in octaved_key_heats) {
+    var note_heat = 0.;
+    for (var o_i in octaved_key_heats[n_i]) {
+      note_heat += octaved_key_heats[n_i][o_i];
+    }
+    total_key_heats[n_i] = Math.min(note_heat, max_heat);
+  }
+}
+
+function decayHeat(heat, dt) {
+  return heat * Math.exp(DECAY_RATE * dt);
+}
+
+function decayNotes(holding) {
+  if (typeof holding !== 'undefined') {
+    decayNotes.holding = holding;
+  }
+  var timestamp = new Date().getTime();
+  var dt = timestamp - prev_timestamp;
+  prev_timestamp = timestamp;
+
+  for (var n_i in octaved_key_heats) {
+    for (var o_i in octaved_key_heats[n_i]) {
+      if (!decayNotes.holding || !decayNotes.holding.includes(o_i + "-" + n_i)) {
+        octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt);
+      }
+    }
+  }
+  updateTotalHeats();
+}
+
+function updateHeat(octave_key, is_key_down, holding) {
+  decayNotes(holding);
+  if (octave_key && is_key_down) {
+    let key = stripNoteOctave(octave_key);
+    octaved_key_heats[key.note][key.octave] += 1.;
+  }
+  //updateHeatPlot(total_key_heats);
+}
+
+setInterval(function () {
+  decayNotes();
+  //updateHeatPlot(total_key_heats);
+}, 20);
+
+module.exports = {
+  updateHeat,
+  getTotalHeats: () => total_key_heats
+};
+
+},{}],4:[function(require,module,exports){
+const key_order = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const key_indices = {
+    "C": 0,
+    "C#": 1,
+    "D": 2,
+    "D#": 3,
+    "E": 4,
+    "F": 5,
+    "F#": 6,
+    "G": 7,
+    "G#": 8,
+    "A": 9,
+    "A#": 10,
+    "B": 11
+};
+
+function key_index(key, scale) {
+    return (key_indices[key] - key_indices[scale] + 12) % 12;
+}
+
+let simple_key_weights = [1.5, 0.1, 0.6, 0.3, 0.8, 0.1, 0.2];
+let out_of_key_weight = 0.05;
+const major_intervals = [2, 2, 1, 2, 2, 2, 1];
+
+const modalities = ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"];
+
+function mode_weights(mode) {
+    if (typeof mode_weights.memo == 'undefined' || typeof mode_weights.memo[mode] == 'undefined') {
+        if (!mode_weights.memo) mode_weights.memo = {};
+        var mode_index = modalities.indexOf(mode);
+        var weight_vector = Array.apply(null, Array(12)).map(Number.prototype.valueOf, out_of_key_weight);
+        var offset = 0;
+        for (var i = 0; i < 7; ++i) {
+            weight_vector[offset] = simple_key_weights[i];
+            offset += major_intervals[(mode_index + i) % 8];
+        }
+        mode_weights.memo[mode] = weight_vector;
+    }
+    return mode_weights.memo[mode];
+}
+
+function modeScaleValue(heats, mode, scale) {
+    let value = 0;
+    for (var key_i in key_order) {
+        let key = key_order[key_i];
+        value += heats[key] / mode_weights(mode)[key_index(key, scale)];
+    }
+    return 10. / value;
+}
+
+// function that returns the mode / scale weights object
+// {"mode: {"scale": weight}
+//
+//
+function modeScaleValues(heats) {
+    let values = {};
+    let max_value = 0;
+    for (var mode_i in modalities) {
+        let mode = modalities[mode_i];
+        values[mode] = {};
+        for (var scale_i in key_order) {
+            var scale = key_order[scale_i];
+            values[mode][scale] = modeScaleValue(heats, mode, scale);
+            if (values[mode][scale] > max_value) {
+                max_value = values[mode][scale];
+            }
+        }
+    }
+    for (var mode_i in modalities) {
+        let mode = modalities[mode_i];
+        for (var scale_i in key_order) {
+            var scale = key_order[scale_i];
+            values[mode][scale] *= 5. / max_value;
+        }
+    }
+    return values;
+}
+
+module.exports = {
+    modeScaleValues
+};
+
+/*
+function updateTopKey (key_heats) {
+    console.log(key_heats)
+
+    var top_val = -1
+    var top_key = "";
+
+    for (var key in key_heats) {
+        if(key_heats[key] > top_val){
+            top_key = key;
+            top_val = key_heats[key];
+        }
+    }
+    console.log("key: " + top_key)
+    $("#key-guess").html("<h1>" + top_key + "</h1>")
+    $("#keyboard").css("background-color", color_map[top_key]);
+}
+
+*/
+
+},{}],5:[function(require,module,exports){
 function generateMIDIMAP() {
     let notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     midimap = {};
