@@ -24,18 +24,13 @@ const key_indices = {
     "A#": 10,
     "B": 11
 }
-const margin = {top: 40, right: 0, bottom: 30, left: 80},
+const margin = {top: 40, right: 0, bottom: 30, left: 80};
 const width = 500;
 const height = 300 - margin.top - margin.bottom;
 
 
 
-let svg = d3.select("#heat-graph").append("svg")
-		    .attr("width", width + margin.left + margin.right)
-		    .attr("height", height + margin.top + margin.bottom)
-		  .append("g")
-		    .attr("transform",
-		          "translate(" + margin.left + "," + margin.top + ")");
+let svg;
 
 function determine_y(mode) {
 	for (var i in modalities){
@@ -78,27 +73,8 @@ function generate_heat_values() {
     }
     return ret;
 }
-let heat_values = generate_heat_values();
 
-svg.selectAll("cells")
-      	.data(heat_values)
-      	.enter().append("rect")
-      	.attr("x", function(d){return determine_x(d.key_name)})
-      	.attr("y", function(d){
-      		return determine_y(d.mode)
-      	})
-      	.style("fill", function(d){
-      		return "white"
-      	})
-      	.attr("id", function(d){return d.key_name.replace("#", "s") + "_" + d.mode})
-      	.attr("class", "cell")
-      	.attr("rx", 3)
-    	.attr("ry", 3)
-      	.attr("width", CELL_WIDTH)
-      	.attr("height", CELL_HEIGHT)
-      	.attr("stroke", "black")
-      	.style("fill-opacity", 1)
-      	.style("stroke-radius", 2);
+let heat_values = generate_heat_values();
 
 function redraw(data){
 	for (var i in data){
@@ -126,7 +102,7 @@ var heat_data = [
 	{"name": "B", "val" : 0}
 ]
 
-let margin_k = {top: 40, right: 20, bottom: 30, left: 40},
+let margin_k = {top: 40, right: 20, bottom: 30, left: 40};
 let width_k = d3.select("#key-graph").node().getBoundingClientRect().width
         - margin_k.left - margin_k.right;
 let height_k = 300 - margin_k.top - margin_k.bottom;
@@ -143,28 +119,70 @@ let svg_k = d3.select("#key-graph").append("svg")
 		  .append("g")
 		    .attr("transform",
 		          "translate(" + margin_k.left + "," + margin_k.top + ")");
+function initialize() {
+    svg = d3.select("#heat-graph").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
 
-x_k.domain(heat_data.map(function(d) { return d.name; }));
-	y_k.domain([0, d3.max(heat_data, function(d) { return d.val; })]);
+    svg.selectAll("cells")
+        .data(heat_values)
+        .enter().append("rect")
+        .attr("x", function(d) {
+            return determine_x(d.key_name)
+        })
+        .attr("y", function(d) {
+            return determine_y(d.mode)
+        })
+        .style("fill", function(d) {
+            return "white"
+        })
+        .attr("id", function(d) {
+            return d.key_name.replace("#", "s") + "_" + d.mode
+        })
+        .attr("class", "cell")
+        .attr("rx", 3)
+        .attr("ry", 3)
+        .attr("width", CELL_WIDTH)
+        .attr("height", CELL_HEIGHT)
+        .attr("stroke", "black")
+        .style("fill-opacity", 1)
+        .style("stroke-radius", 2);
 
-	svg_k.selectAll(".bar")
-      .data(heat_data)
-    .enter().append("rect")
-      .attr("class", "bar")
-      .attr("id", function(d){
-      	var name = d.name.replace("#", "_sharp")
-      	return "bar_" + name
-      })
-      .attr("x", function(d) { return x_k(d.name); })
-      .attr("width", x_k.bandwidth())
-      .attr("y", function(d) { return y_k(d.val); })
-      .attr("height", function(d) { return height - y_k(d.val); })
 
-svg_k.append("g")
-  .attr("transform", "translate(0," + height_k + ")")
-  .attr("font-family", "helvetica")
-  .call(d3.axisBottom(x_k));
+    x_k.domain(heat_data.map(function(d) {
+        return d.name;
+    }));
+    y_k.domain([0, d3.max(heat_data, function(d) {
+        return d.val;
+    })]);
 
+    svg_k.selectAll(".bar")
+        .data(heat_data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("id", function(d) {
+            var name = d.name.replace("#", "_sharp")
+            return "bar_" + name
+        })
+        .attr("x", function(d) {
+            return x_k(d.name);
+        })
+        .attr("width", x_k.bandwidth())
+        .attr("y", function(d) {
+            return y_k(d.val);
+        })
+        .attr("height", function(d) {
+            return height - y_k(d.val);
+        })
+
+    svg_k.append("g")
+        .attr("transform", "translate(0," + height_k + ")")
+        .attr("font-family", "helvetica")
+        .call(d3.axisBottom(x_k));
+}
 
 function updateHeatPlot(weights) {
  	var heat_model_values = modeScaleValues(weights);
@@ -190,4 +208,9 @@ function updateHeatPlot(weights) {
 		key_bar.attr("height", value * 50)
 		key_bar.attr("y", 230 - (value * 50))
 	}
+}
+
+module.exports = {
+    initialize,
+    update: updateHeatPlot
 }
