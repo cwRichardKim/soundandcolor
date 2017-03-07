@@ -1,6 +1,5 @@
 // In the process of refactoring this file into a module
 
-
 const CELL_WIDTH = 35;
 const CELL_HEIGHT = 35;
 const modalities = ["Ionian",
@@ -51,11 +50,6 @@ function determine_x(key_name) {
 	}
 }
 
-function determine_color(v){
-	return "rgba(255,0,0," + (v / 5) + ")"
-	return "rgb(" + Math.floor(v * 50) + ",0,0)";
-}
-
 function generate_heat_values() {
   let ret = [];
   for (var i = 0; i < (7); i++){
@@ -72,14 +66,6 @@ function generate_heat_values() {
   	}
   }
   return ret;
-}
-
-function redraw(data){
-	for (var i in data){
-		var d = data[i]
-		var color = determine_color(d.weight);
-		d3.select("#" + d.key_name.replace("#", "s") + "_" + d.mode).style("fill", color)
-	}
 }
 
 function initialize() {

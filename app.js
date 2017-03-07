@@ -13,7 +13,7 @@ $(document).ready(() => {
     keyboard.addListener(midi_sound.keyEvent);
     keyboard.addListener(key_heats.updateHeat);
     setInterval(() => {
-      heat_plot.update(key_heats.getTotalHeats())
-      probs_graph.update(simple_model.modeScaleValues(key_heats.getTotalHeats()))
+      heat_plot.update(key_heats.getTotalHeats());
+      probs_graph.update(simple_model.modeScaleValues(key_heats.getTotalHeats()));
     }, 16);
 })

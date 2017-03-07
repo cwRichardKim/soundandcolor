@@ -3,26 +3,23 @@ const keyboard = require('./js/inputs/keyboard');
 const midi_sound = require('./js/ui/midi_sound');
 const key_heats = require('./js/models/key_heats');
 const simple_model = require('./js/models/simple_model');
-//const heat_plot = require('./js/ui/heat_graph');
+const heat_plot = require('./js/ui/heat_graph');
 const probs_graph = require('./js/ui/probs_graph');
 
 $(document).ready(() => {
     keyboard.initialize();
     midi_sound.initialize();
-    //heat_plot.initialize();
+    heat_plot.initialize();
     probs_graph.initialize();
     keyboard.addListener(midi_sound.keyEvent);
     keyboard.addListener(key_heats.updateHeat);
-<<<<<<< HEAD
-    /*    keyboard.addListener(() =>
-            heat_plot.update(key_heats.getTotalHeats()))*/
-    keyboard.addListener(() => probs_graph.update(simple_model.modeScaleValues(key_heats.getTotalHeats())));
-=======
-    setInterval(() => heat_plot.update(key_heats.getTotalHeats()), 16);
->>>>>>> browserify
+    setInterval(() => {
+        heat_plot.update(key_heats.getTotalHeats());
+        probs_graph.update(simple_model.modeScaleValues(key_heats.getTotalHeats()));
+    }, 16);
 });
 
-},{"./js/inputs/keyboard":2,"./js/models/key_heats":3,"./js/models/simple_model":4,"./js/ui/midi_sound":5,"./js/ui/probs_graph":6}],2:[function(require,module,exports){
+},{"./js/inputs/keyboard":2,"./js/models/key_heats":3,"./js/models/simple_model":4,"./js/ui/heat_graph":5,"./js/ui/midi_sound":6,"./js/ui/probs_graph":7}],2:[function(require,module,exports){
 /*var svg_keys = [
 	{ id: "octave-1-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "a", stroke: "#555555", fill: "#FFFFF7", x: 0, y: 0, width: 80, height: 400},
 	{ id: "octave-1-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "s", stroke: "#555555", fill: "#FFFFF7", x: 80, y: 0, width: 80, height: 400},
@@ -483,10 +480,7 @@ function updateTopKey (key_heats) {
 */
 
 },{}],5:[function(require,module,exports){
-<<<<<<< HEAD
-=======
 // In the process of refactoring this file into a module
-
 
 const CELL_WIDTH = 35;
 const CELL_HEIGHT = 35;
@@ -532,11 +526,6 @@ function determine_x(key_name) {
   }
 }
 
-function determine_color(v) {
-  return "rgba(255,0,0," + v / 5 + ")";
-  return "rgb(" + Math.floor(v * 50) + ",0,0)";
-}
-
 function generate_heat_values() {
   let ret = [];
   for (var i = 0; i < 7; i++) {
@@ -553,14 +542,6 @@ function generate_heat_values() {
     }
   }
   return ret;
-}
-
-function redraw(data) {
-  for (var i in data) {
-    var d = data[i];
-    var color = determine_color(d.weight);
-    d3.select("#" + d.key_name.replace("#", "s") + "_" + d.mode).style("fill", color);
-  }
 }
 
 function initialize() {
@@ -638,7 +619,6 @@ module.exports = {
 };
 
 },{}],6:[function(require,module,exports){
->>>>>>> browserify
 function generateMIDIMAP() {
     let notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     midimap = {};
@@ -677,10 +657,37 @@ module.exports = {
     keyEvent
 };
 
-},{}],6:[function(require,module,exports){
-var key_data = [{ "name": "C", "val": 0 }, { "name": "C#", "val": 0 }, { "name": "D", "val": 0 }, { "name": "D#", "val": 0 }, { "name": "E", "val": 0 }, { "name": "F", "val": 0 }, { "name": "F#", "val": 0 }, { "name": "G", "val": 100 }, { "name": "G#", "val": 0 }, { "name": "A", "val": 0 }, { "name": "A#", "val": 0 }, { "name": "B", "val": 0 }];
+},{}],7:[function(require,module,exports){
+/*var key_data = [
+	{"name": "C", "val": 0},
+	{"name": "C#", "val": 0},
+	{"name": "D", "val": 0},
+	{"name": "D#", "val": 0},
+	{"name": "E", "val": 0},
+	{"name": "F", "val": 0},
+	{"name": "F#", "val": 0},
+	{"name": "G", "val": 100},
+	{"name": "G#", "val": 0},
+	{"name": "A", "val": 0},
+	{"name": "A#", "val": 0},
+	{"name": "B", "val" : 0}
+]*/
+const key_indices = {
+  "C": 0,
+  "C#": 1,
+  "D": 2,
+  "D#": 3,
+  "E": 4,
+  "F": 5,
+  "F#": 6,
+  "G": 7,
+  "G#": 8,
+  "A": 9,
+  "A#": 10,
+  "B": 11
+};
 
-var color_map = {
+const color_map = {
   "C": "rgb(40, 0, 120)",
   "C#": "rgb(50, 20, 110)",
   "D": "rgb(60, 40, 100)",
@@ -695,67 +702,80 @@ var color_map = {
   "B": "rgb(150, 220, 10)"
 };
 
-var margin = { top: 40, right: 10, bottom: 30, left: 10 };
-width = d3.select("#probs-graph").node().getBoundingClientRect().width - margin.left - margin.right;
+const margin = { top: 40, right: 10, bottom: 30, left: 10 };
+const width = 5; //d3.select("#probs-graph").node().getBoundingClientRect().width - margin.left - margin.right;
 // width = 480 - 
-height = 300 - margin.top - margin.bottom;
+const height = 300 - margin.top - margin.bottom;
 
-var x = d3.scaleBand().range([0, width]).padding(0.1);
-var y = d3.scaleLinear().range([height, 0]);
+function determine_color(v) {
+  return "rgba(255,0,0," + v / 5 + ")";
+  return "rgb(" + Math.floor(v * 50) + ",0,0)";
+}
 
-var svg = d3.select("#probs-graph").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+/*
+	svg.selectAll(".prob_bar")
+      .data(heat_data)
+    .enter().append("rect")
+      .attr("class", "prob_bar")
+      .attr("fill", function(d) {
+        return color_map[d.name]
+      })
+      .attr("id", function(d) {
+        var name = d.name.replace("#", "_sharp")
+        return "key_bar_" + name
+      })
+      .attr("x", function(d) { return x(d.name); })
+      .attr("width", x.bandwidth())
+      .attr("y", function(d) { return y(d.val); })
+      .attr("height", function(d) { return height - y(d.val); });
+      */
 
-x.domain(heat_data.map(function (d) {
-  return d.name;
-}));
-y.domain([0, d3.max(heat_data, function (d) {
-  return d.val;
-})]);
+function initialize() {
+  let x = d3.scaleBand().range([0, width]).padding(0.1);
+  let y = d3.scaleLinear().range([height, 0]);
 
-svg.selectAll(".prob_bar").data(heat_data).enter().append("rect").attr("class", "prob_bar").attr("fill", function (d) {
-  return color_map[d.name];
-}).attr("id", function (d) {
-  var name = d.name.replace("#", "_sharp");
-  return "key_bar_" + name;
-}).attr("x", function (d) {
-  return x(d.name);
-}).attr("width", x.bandwidth()).attr("y", function (d) {
-  return y(d.val);
-}).attr("height", function (d) {
-  return height - y(d.val);
-});
+  let svg = d3.select("#probs-graph").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-svg.append("g").attr("transform", "translate(0," + height + ")").attr("font-family", "helvetica").attr("class", "x axis").call(d3.axisBottom(x));
+  x.domain(Object.keys(key_indices));
+  y.domain([0, 100]);
+  svg.append("g").attr("transform", "translate(0," + height + ")").attr("font-family", "helvetica").attr("class", "x axis").call(d3.axisBottom(x));
+}
+function updateKeyProbs(model_values) {
+  for (let mode in model_values) {
+    for (let key in model_values[mode]) {
+      let color = determine_color(model_values[mode][key]);
+      console.log("#" + key.replace("#", "s") + "_" + mode);
+      d3.select("#" + key.replace("#", "s") + "_" + mode).style("fill", color);
+    }
+  }
 
-function initialize() {}
-
-function updateKeyProbs(keys) {
-  console.log(keys);
-  var maxKey = "C";
-  var maxValue = 0;
+  /*
+  var maxKey = "C"
+  var maxValue = 0
   for (var key in keys) {
     var value = keys[key];
     if (value > maxValue) {
       maxKey = key;
-      maxValue = value;
+      maxValue = value
     }
-
-    key = key.replace("#", "_sharp");
+     key = key.replace("#", "_sharp")
     var selector = "#key_bar_" + key;
-    d3.select(selector).attr("height", value * 20);
-
-    var key_bar = d3.select("#key_bar_" + key);
-    key_bar.attr("height", value * 50);
-    key_bar.attr("y", 230 - value * 50);
+    d3.select(selector).attr("height", value * 20)
+     var key_bar = d3.select("#key_bar_" + key)
+    key_bar.attr("height", value * 50)
+    key_bar.attr("y", 230 - (value * 50))
   }
-  var currentBackground = $("#keyboard").css("background-color");
-
-  var keyboard = d3.select("#keyboard");
-  keyboard.transition().duration(0).style("background-color", currentBackground).transition().duration(2000).style("background-color", color_map[maxKey]);
+  var currentBackground = $("#keyboard").css("background-color")
+   var keyboard = d3.select("#keyboard");
+  keyboard
+    .transition().duration(0)
+    .style("background-color", currentBackground)
+    .transition().duration(2000)
+    .style("background-color", color_map[maxKey])
+    */
 
   // $("#keyboard").css("background-color", color_map[maxKey]);
 }
-
 module.exports = {
   initialize,
   update: updateKeyProbs
