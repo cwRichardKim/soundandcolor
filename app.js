@@ -5,11 +5,10 @@ const simple_model = require('./js/models/simple_model');
 const heat_plot = require('./js/ui/heat_graph');
 
 $(document).ready(() => {
-    keyboard.initialize();
-    midi_sound.initialize();
-    heat_plot.initialize();
-    keyboard.addListener(midi_sound.keyEvent);
-    keyboard.addListener(key_heats.updateHeat);
-    keyboard.addListener(() =>
-        heat_plot.update(key_heats.getTotalHeats()))
+  keyboard.initialize();
+  midi_sound.initialize();
+  heat_plot.initialize();
+  keyboard.addListener(midi_sound.keyEvent);
+  keyboard.addListener(key_heats.updateHeat);
+  setInterval(() => heat_plot.update(key_heats.getTotalHeats()), 16);
 })
