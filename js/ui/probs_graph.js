@@ -72,7 +72,12 @@ svg.append("g")
   .attr("class", "x axis")
   .call(d3.axisBottom(x));
 
+function initialize() {
+
+}
+
 function updateKeyProbs (keys) {
+  console.log(keys);
   var maxKey = "C"
   var maxValue = 0
   for (var key in keys){
@@ -100,4 +105,9 @@ function updateKeyProbs (keys) {
       .style("background-color", color_map[maxKey])
 
   // $("#keyboard").css("background-color", color_map[maxKey]);
+}
+
+module.exports = {
+    initialize,
+    update: updateKeyProbs
 }
