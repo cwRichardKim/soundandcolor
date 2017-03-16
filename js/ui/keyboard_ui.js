@@ -25,7 +25,6 @@ let svg;
 let margin = {top: 40, right: 20, bottom: 30, left: 40},
 	width = 960 - margin.left - margin.right,
 	height = 500 - margin.top - margin.bottom;
-let MIDIMAP;
 const on_screen_keys = {
   "3-C":true,
   "3-C#":true,
@@ -49,16 +48,6 @@ const on_screen_keys = {
 
 // let key_list = [];
 let KEYLISTMAX = 10;
-
-// generates the midi map from 0: 1-C to 120: 12-C
-function generateMIDIMAP() {
-	let notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
-	midimap = {};
-	for (i = 0; i <= 120; i++) {
-		midimap[i] =  Math.floor(i/12 - 1).toString() + "-" + notes[i % 12];
-	}
-	return midimap;
-}
 
 // function fillToFive(input_str){
 // 	if(input_str.length > 5){
@@ -127,25 +116,7 @@ function findSVGKey(key_name) {
 //   }
 // }
 
-// function midiHandler (msg) {
-// 	if (msg.data && msg.data.length >= 3) {
-// 		let isKeyDown = msg.data[0] == 144;
-// 		let isKeyUp = msg.data[0] == 128;
-//
-// 		let keyIndex = msg.data[1];
-// 		let note = keyIndex in MIDIMAP ? MIDIMAP[keyIndex] : null;
-// 		let velocity = msg.data[2];
-// 		let delay = 0;
-// 		if(isKeyDown){
-// 			MIDI.setVolume(0, 100);
-// 			MIDI.noteOn(0, keyIndex, velocity, delay);
-// 			notePressHandler(note, true);
-// 		} else if (isKeyUp) {
-// 			MIDI.noteOff(0, keyIndex, delay);
-// 			notePressHandler(note, false);
-// 		}
-// 	}
-// }
+
 
 function initialize() {
   x = d3.scaleBand()
@@ -206,7 +177,6 @@ function initialize() {
   		return d.keyboard_key;
   	});
 
-  MIDIMAP = generateMIDIMAP();
   svg = d3.select('#svg-keyboard')
 
   // navigator

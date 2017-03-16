@@ -1,5 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 const keyboard = require('./js/inputs/keyboard');
+const midi_input = require('./js/inputs/midi');
 const midi_sound = require('./js/ui/midi_sound');
 const key_heats = require('./js/models/key_heats');
 const simple_model = require('./js/models/simple_model');
@@ -9,20 +10,25 @@ const probs_graph = require('./js/ui/probs_graph');
 
 $(document).ready(() => {
   keyboard.initialize();
+  midi_input.initialize();
   keyboard_ui.initialize();
   midi_sound.initialize();
   heat_plot.initialize();
   probs_graph.initialize();
+
   keyboard.addListener(midi_sound.keyEvent);
   keyboard.addListener(key_heats.updateHeat);
   keyboard.addListener(keyboard_ui.updateKeyboardUI);
+
+  midi_input.addListener(key_heats.updateHeat);
+  midi_input.addListener(keyboard_ui.updateKeyboardUI);
   setInterval(() => {
     heat_plot.update(key_heats.getTotalHeats());
     probs_graph.update(simple_model.modeScaleValues(key_heats.getTotalHeats()));
   }, 16);
 });
 
-},{"./js/inputs/keyboard":2,"./js/models/key_heats":3,"./js/models/simple_model":4,"./js/ui/heat_graph":5,"./js/ui/keyboard_ui.js":6,"./js/ui/midi_sound":7,"./js/ui/probs_graph":8}],2:[function(require,module,exports){
+},{"./js/inputs/keyboard":2,"./js/inputs/midi":3,"./js/models/key_heats":4,"./js/models/simple_model":5,"./js/ui/heat_graph":6,"./js/ui/keyboard_ui.js":7,"./js/ui/midi_sound":8,"./js/ui/probs_graph":9}],2:[function(require,module,exports){
 var keys = {
     "a": "3-C",
     "w": "3-C#",
@@ -88,6 +94,78 @@ module.exports = {
 };
 
 },{}],3:[function(require,module,exports){
+
+let MIDIMAP;
+
+// generates the midi map from 0: 1-C to 120: 12-C
+function generateMIDIMAP() {
+  let notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  midimap = {};
+  for (i = 0; i <= 120; i++) {
+    midimap[i] = Math.floor(i / 12 - 1).toString() + "-" + notes[i % 12];
+  }
+  return midimap;
+}
+
+let listeners = [];
+function callListeners(new_key, is_key_down, held_keys) {
+  for (let i = 0; i < listeners.length; ++i) {
+    listeners[i](new_key, is_key_down, held_keys);
+  }
+}
+
+function addListener() {
+  for (let i = 0; i < arguments.length; ++i) {
+    listeners.push(arguments[i]);
+  }
+}
+
+// updates a dictionary of musical notes (eg: 2-C) with keydown / keyup events
+// should be ambiguous as to where the input comes from (keybaord, MIDI)
+function notePressHandler(note, down) {
+  if (typeof notePressHandler.map === 'undefined') {
+    notePressHandler.map = {};
+  }
+  let new_key_down = !notePressHandler.map[note] && down ? note : null;
+  notePressHandler.map[note] = down;
+  if (new_key_down || !down) {
+    callListeners(note, down, Object.keys(notePressHandler.map).filter(key => notePressHandler.map[key]));
+  }
+}
+
+function midiHandler(msg) {
+  if (msg.data && msg.data.length >= 3) {
+    let isKeyDown = msg.data[0] == 144;
+    let isKeyUp = msg.data[0] == 128;
+    let keyIndex = msg.data[1];
+    let note = keyIndex in MIDIMAP ? MIDIMAP[keyIndex] : null;
+    let velocity = msg.data[2];
+    let delay = 0;
+    if (isKeyDown) {
+      MIDI.setVolume(0, 100);
+      MIDI.noteOn(0, keyIndex, velocity, delay);
+      notePressHandler(note, true);
+    } else if (isKeyUp) {
+      MIDI.noteOff(0, keyIndex, delay);
+      notePressHandler(note, false);
+    }
+  }
+}
+
+function initialize() {
+  MIDIMAP = generateMIDIMAP();
+  navigator.requestMIDIAccess().then(midi => {
+    var FIRST = midi.inputs.values().next().value;
+    FIRST.addEventListener('midimessage', midiHandler);
+  });
+}
+
+module.exports = {
+  initialize,
+  addListener
+};
+
+},{}],4:[function(require,module,exports){
 const DECAY_RATE = -0.001;
 
 // heats with incorporated octaves
@@ -184,7 +262,7 @@ module.exports = {
   getTotalHeats: () => total_key_heats
 };
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 const key_order = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const key_indices = {
     "C": 0,
@@ -287,7 +365,7 @@ function updateTopKey (key_heats) {
 
 */
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 // In the process of refactoring this file into a module
 
 const CELL_WIDTH = 35;
@@ -426,7 +504,7 @@ module.exports = {
   update: updateHeatPlot
 };
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 const svg_keys = [{ id: "octave-3-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "a", stroke: "#555555", fill: "#FFFFF7", x: 0, y: 0, width: 80, height: 400 }, { id: "octave-3-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "s", stroke: "#555555", fill: "#FFFFF7", x: 80, y: 0, width: 80, height: 400 }, { id: "octave-3-E-key", class: "piano-key white-key", data_key: "E", keyboard_key: "d", stroke: "#555555", fill: "#FFFFF7", x: 160, y: 0, width: 80, height: 400 }, { id: "octave-3-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "f", stroke: "#555555", fill: "#FFFFF7", x: 240, y: 0, width: 80, height: 400 }, { id: "octave-3-G-key", class: "piano-key white-key", data_key: "G", keyboard_key: "g", stroke: "#555555", fill: "#FFFFF7", x: 320, y: 0, width: 80, height: 400 }, { id: "octave-3-A-key", class: "piano-key white-key", data_key: "A", keyboard_key: "h", stroke: "#555555", fill: "#FFFFF7", x: 400, y: 0, width: 80, height: 400 }, { id: "octave-3-B-key", class: "piano-key white-key", data_key: "B", keyboard_key: "j", stroke: "#555555", fill: "#FFFFF7", x: 480, y: 0, width: 80, height: 400 }, { id: "octave-3-C#-key", class: "piano-key black-key", data_key: "C#", keyboard_key: "w", stroke: "#555555", fill: "#4B4B4B", x: 60, y: 0, width: 40, height: 280 }, { id: "octave-3-D#-key", class: "piano-key black-key", data_key: "D#", keyboard_key: "e", stroke: "#555555", fill: "#4B4B4B", x: 140, y: 0, width: 40, height: 280 }, { id: "octave-3-F#-key", class: "piano-key black-key", data_key: "F#", keyboard_key: "t", stroke: "#555555", fill: "#4B4B4B", x: 300, y: 0, width: 40, height: 280 }, { id: "octave-3-G#-key", class: "piano-key black-key", data_key: "G#", keyboard_key: "y", stroke: "#555555", fill: "#4B4B4B", x: 380, y: 0, width: 40, height: 280 }, { id: "octave-3-A#-key", class: "piano-key black-key", data_key: "A#", keyboard_key: "u", stroke: "#555555", fill: "#4B4B4B", x: 460, y: 0, width: 40, height: 280 }, { id: "octave-4-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "k", stroke: "#555555", fill: "#FFFFF7", x: 560, y: 0, width: 80, height: 400 }, { id: "octave-4-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "l", stroke: "#555555", fill: "#FFFFF7", x: 640, y: 0, width: 80, height: 400 }, { id: "octave-4-E-key", class: "piano-key white-key", data_key: "E", keyboard_key: ";", stroke: "#555555", fill: "#FFFFF7", x: 720, y: 0, width: 80, height: 400 }, { id: "octave-4-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "/'", stroke: "#555555", fill: "#FFFFF7", x: 800, y: 0, width: 80, height: 400 }, { id: "octave-4-C#-key", class: "piano-key black-key", data_key: "C#", keyboard_key: "o", stroke: "#555555", fill: "#4B4B4B", x: 620, y: 0, width: 40, height: 280 }, { id: "octave-4-D#-key", class: "piano-key black-key", data_key: "D#", keyboard_key: "p", stroke: "#555555", fill: "#4B4B4B", x: 700, y: 0, width: 40, height: 280 }];
 let x;
 let y;
@@ -434,7 +512,6 @@ let svg;
 let margin = { top: 40, right: 20, bottom: 30, left: 40 },
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
-let MIDIMAP;
 const on_screen_keys = {
   "3-C": true,
   "3-C#": true,
@@ -458,16 +535,6 @@ const on_screen_keys = {
 
 // let key_list = [];
 let KEYLISTMAX = 10;
-
-// generates the midi map from 0: 1-C to 120: 12-C
-function generateMIDIMAP() {
-  let notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-  midimap = {};
-  for (i = 0; i <= 120; i++) {
-    midimap[i] = Math.floor(i / 12 - 1).toString() + "-" + notes[i % 12];
-  }
-  return midimap;
-}
 
 // function fillToFive(input_str){
 // 	if(input_str.length > 5){
@@ -530,25 +597,6 @@ function findSVGKey(key_name) {
 //   }
 // }
 
-// function midiHandler (msg) {
-// 	if (msg.data && msg.data.length >= 3) {
-// 		let isKeyDown = msg.data[0] == 144;
-// 		let isKeyUp = msg.data[0] == 128;
-//
-// 		let keyIndex = msg.data[1];
-// 		let note = keyIndex in MIDIMAP ? MIDIMAP[keyIndex] : null;
-// 		let velocity = msg.data[2];
-// 		let delay = 0;
-// 		if(isKeyDown){
-// 			MIDI.setVolume(0, 100);
-// 			MIDI.noteOn(0, keyIndex, velocity, delay);
-// 			notePressHandler(note, true);
-// 		} else if (isKeyUp) {
-// 			MIDI.noteOff(0, keyIndex, delay);
-// 			notePressHandler(note, false);
-// 		}
-// 	}
-// }
 
 function initialize() {
   x = d3.scaleBand().range([0, width]).padding(0.1);
@@ -593,7 +641,6 @@ function initialize() {
     return d.keyboard_key;
   });
 
-  MIDIMAP = generateMIDIMAP();
   svg = d3.select('#svg-keyboard');
 
   // navigator
@@ -611,7 +658,7 @@ module.exports = {
   updateKeyboardUI
 };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 function generateMIDIMAP() {
     let notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     midimap = {};
@@ -650,7 +697,7 @@ module.exports = {
     keyEvent
 };
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /*var key_data = [
 	{"name": "C", "val": 0},
 	{"name": "C#", "val": 0},
@@ -737,7 +784,6 @@ function updateKeyProbs(model_values) {
   for (let mode in model_values) {
     for (let key in model_values[mode]) {
       let color = determine_color(model_values[mode][key]);
-      console.log("#" + key.replace("#", "s") + "_" + mode);
       d3.select("#" + key.replace("#", "s") + "_" + mode).style("fill", color);
     }
   }
