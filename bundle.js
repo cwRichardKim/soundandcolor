@@ -5,16 +5,20 @@ const midi_sound = require('./js/ui/midi_sound');
 const key_heats = require('./js/models/key_heats');
 const simple_model = require('./js/models/simple_model');
 const heat_plot = require('./js/ui/heat_graph');
-const keyboard_ui = require('./js/ui/keyboard_ui.js');
+const keyboard_ui = require('./js/ui/keyboard_ui');
 const probs_graph = require('./js/ui/probs_graph');
+const simple_view = require('./js/ui/simple_view');
+const layout = require('./js/ui/layout');
 
 $(document).ready(() => {
+  layout.initialize();
   keyboard.initialize();
   midi_input.initialize();
   keyboard_ui.initialize();
   midi_sound.initialize();
   heat_plot.initialize();
   probs_graph.initialize();
+  simple_view.initialize();
 
   keyboard.addListener(midi_sound.keyEvent);
   keyboard.addListener(key_heats.updateHeat);
@@ -28,7 +32,7 @@ $(document).ready(() => {
   }, 16);
 });
 
-},{"./js/inputs/keyboard":2,"./js/inputs/midi":3,"./js/models/key_heats":4,"./js/models/simple_model":5,"./js/ui/heat_graph":6,"./js/ui/keyboard_ui.js":7,"./js/ui/midi_sound":8,"./js/ui/probs_graph":9}],2:[function(require,module,exports){
+},{"./js/inputs/keyboard":2,"./js/inputs/midi":3,"./js/models/key_heats":4,"./js/models/simple_model":5,"./js/ui/heat_graph":6,"./js/ui/keyboard_ui":7,"./js/ui/layout":8,"./js/ui/midi_sound":9,"./js/ui/probs_graph":10,"./js/ui/simple_view":11}],2:[function(require,module,exports){
 var keys = {
     "a": "3-C",
     "w": "3-C#",
@@ -578,6 +582,63 @@ module.exports = {
 };
 
 },{}],8:[function(require,module,exports){
+function initialize() {
+  var Menu = function () {
+    var burger = document.querySelector('.burger');
+    var menu = document.querySelector('.menu');
+    var menuList = document.querySelector('.menu__list');
+    var graphs = document.querySelector('.menu__graphs');
+    var menuItems = document.querySelectorAll('.menu__item');
+
+    console.log(burger);
+
+    var active = false;
+
+    var toggleMenu = function () {
+      if (!active) {
+        menu.classList.add('menu--active');
+        menuList.classList.add('menu__list--active');
+        graphs.classList.add('menu__graphs--active');
+        burger.classList.add('burger--close');
+        for (var i = 0, ii = menuItems.length; i < ii; i++) {
+          menuItems[i].classList.add('menu__item--active');
+        }
+
+        active = true;
+      } else {
+        menu.classList.remove('menu--active');
+        menuList.classList.remove('menu__list--active');
+        graphs.classList.remove('menu__graphs--active');
+        burger.classList.remove('burger--close');
+        for (var i = 0, ii = menuItems.length; i < ii; i++) {
+          menuItems[i].classList.remove('menu__item--active');
+        }
+
+        active = false;
+      }
+    };
+
+    var bindActions = function () {
+      burger.addEventListener('click', toggleMenu, false);
+    };
+
+    var init = function () {
+      bindActions();
+    };
+
+    return {
+      init: init
+    };
+  }();
+
+  Menu.init();
+}
+
+module.exports = {
+  initialize
+};
+
+},{}],9:[function(require,module,exports){
 function generateMIDIMAP() {
     let notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     midimap = {};
@@ -616,7 +677,7 @@ module.exports = {
     keyEvent
 };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 const key_indices = {
   "C": 0,
   "C#": 1,
@@ -630,21 +691,6 @@ const key_indices = {
   "A": 9,
   "A#": 10,
   "B": 11
-};
-
-const color_map = {
-  "C": "rgb(40, 0, 120)",
-  "C#": "rgb(50, 20, 110)",
-  "D": "rgb(60, 40, 100)",
-  "D#": "rgb(70, 60, 90)",
-  "E": "rgb(80, 80, 80)",
-  "F": "rgb(90, 100, 70)",
-  "F#": "rgb(100, 120, 60)",
-  "G": "rgb(110, 140, 50)",
-  "G#": "rgb(120, 160, 40)",
-  "A": "rgb(130, 180, 30)",
-  "A#": "rgb(140, 200, 20)",
-  "B": "rgb(150, 220, 10)"
 };
 
 const margin = { top: 40, right: 10, bottom: 30, left: 10 };
@@ -723,6 +769,33 @@ function updateKeyProbs(model_values) {
 module.exports = {
   initialize,
   update: updateKeyProbs
+};
+
+},{}],11:[function(require,module,exports){
+
+// http://www.cleansingfire.org/wp-content/uploads/2012/12/wheel-2.jpg\
+// consider: http://www.easy-oil-painting-techniques.org/images/colorwheel12point.jpg
+const key_colors_map = {
+  "C": "RGB(254, 220, 1)",
+  "C#": "RGB(178, 209, 30)",
+  "D": "RGB(8, 128, 116)",
+  "D#": "RGB(3, 125, 149)",
+  "E": "RGB(3, 71, 132)",
+  "F": "RGB(0, 30, 103))",
+  "F#": "RGB(126, 13, 129)",
+  "G": "RGB(200, 17, 107)",
+  "G#": "RGB(229, 65, 40)",
+  "A": "RGB(254, 105, 13)",
+  "A#": "RGB(255, 149, 55)",
+  "B": "RGB(255, 168, 35))"
+};
+
+const mode_colors = ["RGB(254, 220, 1)", "RGB(178, 209, 30)", "RGB(3, 125, 149)", "RGB(0, 30, 103))", "RGB(126, 13, 129)", "RGB(200, 17, 107)", "RGB(254, 105, 13)", "RGB(255, 168, 35))"];
+
+function initialize() {}
+
+module.exports = {
+  initialize
 };
 
 },{}]},{},[1]);

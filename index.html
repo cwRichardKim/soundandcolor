@@ -30,28 +30,45 @@
 	</head>
 
 	<body>
-		<div class="sc-header">
-			<h1>Sound and Color</h1>
-			<h2><small>A Music Visualization Project</small></h2>
-			<hr/>
-		</div>
 
-		<div class="container">
-			<div class="row" id="graphs">
-			  	<div class="col-sm-8" id="heat-graph"></div>
-			  	<div class="col-sm-4" id="key-graph"></div>
-			</div>
-		</div>
+		<header class="header">
+		  <div class="burger">
+		    <div class="burger__patty"></div>
+		    <div class="burger__patty"></div>
+		    <div class="burger__patty"></div>
+		  </div>
 
-		<div class="keyboard-container">
-			<div id="keyboard"></div>
-			<hr/>
-		</div>
+		  <nav class="menu">
 
-		<p>
-			<a href="https://github.com/soundandcolor/soundandcolor">Repository</a>
-			<a href="https://github.com/soundandcolor/soundandcolor/blob/master/README.md">README</a>
-		</p>
+		    <div class="menu__graphs">
+
+					<div class="container">
+						<div class="row" id="key-graph"></div>
+						<div class="row" id="heat-graph"></div>
+						<div class="row keyboard-container">
+							<div id="keyboard"></div>
+						</div>
+					</div>
+
+		    </div>
+
+		    <ul class="menu__list">
+					<div class="sc-header">
+						<h1>Sound and Color</h1>
+						<p>A Music Visualization Project</p>
+					</div>
+		      <li class="menu__item"><a href="https://github.com/soundandcolor/soundandcolor/blob/master/README.md" class="menu__link">About</a></li>
+		      <li class="menu__item"><a href="" class="menu__link">Settings</a></li>
+		      <li class="menu__item"><a href="https://github.com/soundandcolor/soundandcolor" class="menu__link">Code</a></li>
+		    </ul>
+		  </nav>
+		</header>
+
+		<main>
+		  <h1>Sound && Color</h1>
+		  <h3>Use a midi or computer keyboard to start (click the menu button for help)</h3>
+		  <p class="support">At this time we only support the Chrome Desktop browser</p>
+		</main>
 
     <script src="bundle.js"></script>
 	</body>

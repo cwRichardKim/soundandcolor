@@ -1,0 +1,275 @@
+$primary-color-1: #d45f7f;
+$primary-color-2: #d457ec;
+
+.sc-header {
+	width: 100%;
+	padding-top: 20px;
+	text-align: center;
+}
+
+.key-text {
+	font-family: "courier new";
+	text-align: right;
+}
+
+svg {
+	position: relative;
+	left: 50%;
+	-webkit-transform: translateX(-50%);
+	-ms-transform: translateX(-50%);
+	transform: translateX(-50%);
+}
+
+.container {
+	width: 100%;
+}
+
+#key-graph {
+	width: 50%;
+	margin: auto;
+	margin-bottom: 20px;
+}
+
+#heat-graph {
+	width: 50%;
+	margin: auto;
+}
+
+.keyboard-container {
+	margin: 0px;
+}
+
+#keyboard {
+
+}
+
+.x.axis path {
+	fill: steelblue;
+
+	/*visibility: hidden;*/
+}
+
+/////////////////////////////////////////////////////////
+/////////// DEFAULT LAYOUT / FRONTEND STUFF /////////////
+/////////////////////////////////////////////////////////
+
+@mixin easeOut {
+  transition: all .4s cubic-bezier(0.23, 1, 0.32, 1)
+}
+
+@mixin tablet {
+  @media screen and (max-width: 768px) {
+    @content;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+	background: -moz-linear-gradient(top, $primary-color-1 0%, $primary-color-2 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, $primary-color-1), color-stop(100%, $primary-color-2));
+	background: -webkit-linear-gradient(top, $primary-color-1 0%, $primary-color-2 100%);
+	background: -o-linear-gradient(top, $primary-color-1 0%, $primary-color-2 100%);
+	background: -ms-linear-gradient(top, $primary-color-1 0%, $primary-color-2 100%);
+	background: linear-gradient(to bottom, $primary-color-1 0%, $primary-color-2 100%);
+  line-height: 1.5;
+}
+
+.header {
+  position: fixed;
+  z-index: 5;
+  width: 100%;
+}
+
+.burger {
+  position: absolute;
+  z-index: 10;
+  right: 25px;
+  top: 25px;
+  cursor: pointer;
+  transform: rotateY(0);
+  @include easeOut;
+
+  &__patty {
+    width: 28px;
+    height: 2px;
+    margin: 0 0 4px 0;
+    background: white;
+    @include easeOut;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  // transform burger into 'x'
+  &--close {
+    transform: rotate(180deg);
+
+    .burger__patty {
+      &:nth-child(1) {
+        transform: rotate(45deg) translate(4px, 4px);
+      }
+      &:nth-child(2) {
+        opacity: 0;
+      }
+      &:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -4px);
+      }
+    }
+  }
+}
+
+.menu {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  visibility: hidden;
+
+  &--active {
+    visibility: visible;
+  }
+
+  &__graphs,
+  &__list {
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+    justify-content: center;
+    float: left;
+    width: 50%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    background: rgba(0,0,0, 0.2);
+    list-style-type: none;
+    transform: translate3d(0, -100%, 0);
+    @include easeOut;
+
+    &--active {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  &__graphs {
+    background: rgba(255, 255, 255, 0.9);
+		height: 100vh;
+    @include easeOut;
+    transform: translate3d(0, 100%, 0);
+
+    &--active {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  &__item {
+    transform: translate3d(500px, 0, 0);
+    @include easeOut;
+
+    &--active {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  &__link {
+    display: inline-block;
+    position: relative;
+    font-size: 30px;
+    padding: 15px 0;
+    font-weight: 300;
+    color: white;
+    text-decoration: none;
+    color: white;
+    @include easeOut;
+
+    &:before {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 10px;
+      height: 2px;
+      background: white;
+      transform: translateX(-50%);
+      @include easeOut;
+    }
+
+    &:hover {
+			text-decoration: none;
+			opacity: 0.6;
+			color: white;
+      &:before {
+        width: 100%;
+      }
+    }
+  }
+
+  // add delay to each menu item
+  @for $x from 1 through 6 {
+    .menu__item:nth-child(#{$x}) {
+      transition-delay: $x * .1s;
+    }
+  }
+}
+
+// responsive tablet view
+@include tablet {
+ ul.menu__list,
+ div.menu__graphs {
+  float: none;
+  width: 100%;
+  min-height: 0;
+
+   &--active {
+     transform: translate3d(0, 0, 0);
+   }
+ }
+
+ .menu__list {
+   height: 75vh;
+   transform: translate3d(-100%, 0, 0);
+ }
+
+ .menu__link {
+   font-size: 24px;
+ }
+
+ .menu__graphs {
+   height: 25vh;
+   transform: translate3d(100%, 0, 0);
+ }
+}
+
+h1, h2, h3, p {
+  margin: 0;
+  font-weight: 400;
+	color: white;
+}
+
+main {
+  height: 100vh;
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  padding: 8vw;
+
+  h1 > a {
+    color: white;
+    text-decoration: none;
+    font-size: 48px;
+    font-weight: 300;
+  }
+}
+
+.support {
+  position: fixed;
+  bottom: 24px;
+  color: rgba(black, 0.6);
+}
