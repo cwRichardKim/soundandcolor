@@ -1,10 +1,6 @@
 body{
 	background-color: #FFFFFF;
 }
-#currentKey {
-	color: red;
-	background-color: black 
-}
 .sc-header {
 	background-color: #DFDFDF;
 	margin-left: 0px;
@@ -12,10 +8,6 @@ body{
 	margin-top: 0px;
 	padding-top: 20px;
 	text-align: center;
-
-}
-.sc-header p {
-	margin-bottom: 0px;
 }
 
 .key-text {
@@ -35,14 +27,8 @@ svg {
 	background-color: #D0D0D0;
 }
 
-#key-guess h1{
-	text-align: center;
-	/*font-size: 500%;*/
-}
-
-
 #keyboard {
-	
+
 }
 
 #graphs {

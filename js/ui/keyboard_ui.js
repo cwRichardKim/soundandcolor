@@ -46,18 +46,7 @@ const on_screen_keys = {
   "4-F":true
 };
 
-// let key_list = [];
 let KEYLISTMAX = 10;
-
-// function fillToFive(input_str){
-// 	if(input_str.length > 5){
-// 		return input_str
-// 	}
-// 	for(var i = input_str.length; i < 5; i++){
-// 		input_str = "&nbsp" + input_str;
-// 	}
-// 	return input_str;
-// }
 
 function updateKeyboardUI(octave_key, is_key_down, holding) {
   if (octave_key != null) {
@@ -86,37 +75,6 @@ function findSVGKey(key_name) {
 	}
 	return "octave-" + key_name + "-key";
 }
-
-// function keyListToString() {
-// 	ret_string = ""
-// 	var start_index = (key_list.length - KEYLISTMAX) < 0 ?
-// 		              0 : key_list.length - KEYLISTMAX
-// 	for (i = start_index; i < key_list.length; i++){
-// 		if(i == key_list.length - 1){
-// 			ret_string += " <span id='currentKey'>" + fillToFive(key_list[i]) + "</span>"
-// 		} else {
-// 			ret_string += fillToFive(key_list[i]);
-// 		}
-// 	}
-// 	return ret_string;
-// }
-
-// Processes heats and graphs. Does not process sounds. Called every key up and
-// down event. should deal with both keyboard and midi
-// new_key_down: if this is a keydown event, includes the new (musical) key (eg: 2-C)
-// holding: contains all the (musical) keys still playing (eg: 2-C)
-// function updatePlayer(new_key_down, holding) {
-//   // hold note longer if it is in holding
-//   // process audio here too so we don't get multiple notes for one keydown
-// 	updateHeat(new_key_down, holding);
-//   if (new_key_down) {
-//     updateKeyList(new_key_down);
-// 		// majorScaleValues(key_heats);
-// 		$("#key_stream").html(keyListToString());
-//   }
-// }
-
-
 
 function initialize() {
   x = d3.scaleBand()
@@ -178,15 +136,6 @@ function initialize() {
   	});
 
   svg = d3.select('#svg-keyboard')
-
-  // navigator
-  //   .requestMIDIAccess()
-  //   .then(
-  //     midi => {
-  //     	var FIRST = midi.inputs.values().next().value;
-  // 			FIRST.addEventListener('midimessage', midiHandler);
-  //     }
-  //   );
 }
 
 module.exports = {
