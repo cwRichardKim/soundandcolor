@@ -1,30 +1,32 @@
+const key_width = 50;
+const key_height = 150;
 const svg_keys = [
-	{ id: "octave-3-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "a", stroke: "#555555", fill: "#FFFFF7", x: 0, y: 0, width: 80, height: 400},
-	{ id: "octave-3-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "s", stroke: "#555555", fill: "#FFFFF7", x: 80, y: 0, width: 80, height: 400},
-	{ id: "octave-3-E-key", class: "piano-key white-key", data_key: "E", keyboard_key: "d", stroke: "#555555", fill: "#FFFFF7", x: 160, y: 0, width: 80, height: 400},
-	{ id: "octave-3-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "f", stroke: "#555555", fill: "#FFFFF7", x: 240, y: 0, width: 80, height: 400},
-	{ id: "octave-3-G-key", class: "piano-key white-key", data_key: "G", keyboard_key: "g", stroke: "#555555", fill: "#FFFFF7", x: 320, y: 0, width: 80, height: 400},
-	{ id: "octave-3-A-key", class: "piano-key white-key", data_key: "A", keyboard_key: "h", stroke: "#555555", fill: "#FFFFF7", x: 400, y: 0, width: 80, height: 400},
-	{ id: "octave-3-B-key", class: "piano-key white-key", data_key: "B",  keyboard_key: "j", stroke: "#555555", fill: "#FFFFF7", x: 480, y: 0, width: 80, height: 400},
-	{ id: "octave-3-C#-key", class: "piano-key black-key", data_key: "C#", keyboard_key: "w", stroke: "#555555", fill: "#4B4B4B", x: 60, y: 0, width: 40, height: 280},
-	{ id: "octave-3-D#-key", class: "piano-key black-key", data_key: "D#", keyboard_key: "e", stroke: "#555555", fill: "#4B4B4B", x: 140, y: 0, width: 40, height: 280},
-	{ id: "octave-3-F#-key", class: "piano-key black-key", data_key: "F#", keyboard_key: "t", stroke: "#555555", fill: "#4B4B4B", x: 300, y: 0, width: 40, height: 280},
-	{ id: "octave-3-G#-key", class: "piano-key black-key", data_key: "G#", keyboard_key: "y", stroke: "#555555", fill: "#4B4B4B", x: 380, y: 0, width: 40, height: 280},
-	{ id: "octave-3-A#-key", class: "piano-key black-key", data_key: "A#", keyboard_key: "u", stroke: "#555555", fill: "#4B4B4B", x: 460, y: 0, width: 40, height: 280},
+	{ id: "octave-3-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "a", stroke: "#555555", fill: "#FFFFF7", x: 0, y: 0, width: key_width, height: key_height},
+	{ id: "octave-3-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "s", stroke: "#555555", fill: "#FFFFF7", x: key_width, y: 0, width: key_width, height: key_height},
+	{ id: "octave-3-E-key", class: "piano-key white-key", data_key: "E", keyboard_key: "d", stroke: "#555555", fill: "#FFFFF7", x: key_width * 2, y: 0, width: key_width, height: key_height},
+	{ id: "octave-3-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "f", stroke: "#555555", fill: "#FFFFF7", x: key_width * 3, y: 0, width: key_width, height: key_height},
+	{ id: "octave-3-G-key", class: "piano-key white-key", data_key: "G", keyboard_key: "g", stroke: "#555555", fill: "#FFFFF7", x: key_width * 4, y: 0, width: key_width, height: key_height},
+	{ id: "octave-3-A-key", class: "piano-key white-key", data_key: "A", keyboard_key: "h", stroke: "#555555", fill: "#FFFFF7", x: key_width * 5, y: 0, width: key_width, height: key_height},
+	{ id: "octave-3-B-key", class: "piano-key white-key", data_key: "B",  keyboard_key: "j", stroke: "#555555", fill: "#FFFFF7", x: key_width * 6, y: 0, width: key_width, height: key_height},
+	{ id: "octave-3-C#-key", class: "piano-key black-key", data_key: "C#", keyboard_key: "w", stroke: "#555555", fill: "#4B4B4B", x: key_width * .75, y: 0, width: key_width / 2, height: key_height * .75},
+	{ id: "octave-3-D#-key", class: "piano-key black-key", data_key: "D#", keyboard_key: "e", stroke: "#555555", fill: "#4B4B4B", x: key_width * 1.75, y: 0, width: key_width / 2, height: key_height * .75},
+	{ id: "octave-3-F#-key", class: "piano-key black-key", data_key: "F#", keyboard_key: "t", stroke: "#555555", fill: "#4B4B4B", x: key_width * 3.75, y: 0, width: key_width / 2, height: key_height * .75},
+	{ id: "octave-3-G#-key", class: "piano-key black-key", data_key: "G#", keyboard_key: "y", stroke: "#555555", fill: "#4B4B4B", x: key_width * 4.75, y: 0, width: key_width / 2, height: key_height * .75},
+	{ id: "octave-3-A#-key", class: "piano-key black-key", data_key: "A#", keyboard_key: "u", stroke: "#555555", fill: "#4B4B4B", x: key_width * 5.75, y: 0, width: key_width / 2, height: key_height * .75},
 
-	{ id: "octave-4-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "k", stroke: "#555555", fill: "#FFFFF7", x: 560, y: 0, width: 80, height: 400},
-	{ id: "octave-4-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "l", stroke: "#555555", fill: "#FFFFF7", x: 640, y: 0, width: 80, height: 400},
-	{ id: "octave-4-E-key", class: "piano-key white-key", data_key: "E", keyboard_key: ";", stroke: "#555555", fill: "#FFFFF7", x: 720, y: 0, width: 80, height: 400},
-	{ id: "octave-4-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "/'", stroke: "#555555", fill: "#FFFFF7", x: 800, y: 0, width: 80, height: 400},
-	{ id: "octave-4-C#-key", class: "piano-key black-key", data_key: "C#", keyboard_key: "o", stroke: "#555555", fill: "#4B4B4B", x: 620, y: 0, width: 40, height: 280},
-	{ id: "octave-4-D#-key", class: "piano-key black-key", data_key: "D#", keyboard_key: "p", stroke: "#555555", fill: "#4B4B4B", x: 700, y: 0, width: 40, height: 280}
+	{ id: "octave-4-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "k", stroke: "#555555", fill: "#FFFFF7", x: key_width * 7, y: 0, width: key_width, height: key_height},
+	{ id: "octave-4-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "l", stroke: "#555555", fill: "#FFFFF7", x: key_width * 8, y: 0, width: key_width, height: key_height},
+	{ id: "octave-4-E-key", class: "piano-key white-key", data_key: "E", keyboard_key: ";", stroke: "#555555", fill: "#FFFFF7", x: key_width * 9, y: 0, width: key_width, height: key_height},
+	{ id: "octave-4-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "\'", stroke: "#555555", fill: "#FFFFF7", x: key_width * 10, y: 0, width: key_width, height: key_height},
+	{ id: "octave-4-C#-key", class: "piano-key black-key", data_key: "C#", keyboard_key: "o", stroke: "#555555", fill: "#4B4B4B", x: key_width * 7.75, y: 0, width: key_width / 2, height: key_height * .75},
+	{ id: "octave-4-D#-key", class: "piano-key black-key", data_key: "D#", keyboard_key: "p", stroke: "#555555", fill: "#4B4B4B", x: key_width * 8.75, y: 0, width: key_width / 2, height: key_height * .75}
 ]
 let x;
 let y;
 let svg;
 let margin = {top: 40, right: 20, bottom: 30, left: 40},
-	width = 960 - margin.left - margin.right,
-	height = 500 - margin.top - margin.bottom;
+	width = key_width * 11 + margin.left + margin.right,
+	height = key_height + margin.top + margin.bottom;
 const on_screen_keys = {
   "3-C":true,
   "3-C#":true,
@@ -114,15 +116,15 @@ function initialize() {
   	.enter().append("text")
   	.attr("x", function(d) {
   		if(d.class.includes("black-key")){
-  			return d.x + 15;
+  			return d.x + key_width / 4 - 5;
   		}
-  		return d.x + 15;
+  		return d.x + key_width / 2 - 5;
   	})
   	.attr("y", function(d) {
   		if(d.class.includes("black-key")){
-  			return d.y + 240;
+  			return d.y + key_height * .75 - 15;
   		}
-  		return d.y + 360;
+  		return d.y + key_height - 15;
   	})
   	.attr("font-family", "helvetica")
   	.attr("fill", function(d) {

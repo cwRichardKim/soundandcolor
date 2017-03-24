@@ -1,6 +1,13 @@
 $primary-color-1: #d45f7f;
 $primary-color-2: #d457ec;
 
+#color-background {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	opacity: 0;
+}
+
 .sc-header {
 	width: 100%;
 	padding-top: 20px;
@@ -69,12 +76,6 @@ svg {
 
 body {
   min-height: 100vh;
-	background: -moz-linear-gradient(top, $primary-color-1 0%, $primary-color-2 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, $primary-color-1), color-stop(100%, $primary-color-2));
-	background: -webkit-linear-gradient(top, $primary-color-1 0%, $primary-color-2 100%);
-	background: -o-linear-gradient(top, $primary-color-1 0%, $primary-color-2 100%);
-	background: -ms-linear-gradient(top, $primary-color-1 0%, $primary-color-2 100%);
-	background: linear-gradient(to bottom, $primary-color-1 0%, $primary-color-2 100%);
   line-height: 1.5;
 }
 
@@ -148,7 +149,7 @@ body {
   &__list {
     margin: 0;
     padding: 0;
-    background: rgba(0,0,0, 0.2);
+    background: rgba(0,0,0, 0.3);
     list-style-type: none;
     transform: translate3d(0, -100%, 0);
     @include easeOut;
@@ -253,7 +254,8 @@ h1, h2, h3, p {
 	color: white;
 }
 
-main {
+.main {
+	position: absolute;
   height: 100vh;
   display: flex;
   flex-flow: column wrap;

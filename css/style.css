@@ -1,3 +1,9 @@
+#color-background {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  opacity: 0; }
+
 .sc-header {
   width: 100%;
   padding-top: 20px;
@@ -38,12 +44,6 @@ svg {
 
 body {
   min-height: 100vh;
-  background: -moz-linear-gradient(top, #d45f7f 0%, #d457ec 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #d45f7f), color-stop(100%, #d457ec));
-  background: -webkit-linear-gradient(top, #d45f7f 0%, #d457ec 100%);
-  background: -o-linear-gradient(top, #d45f7f 0%, #d457ec 100%);
-  background: -ms-linear-gradient(top, #d45f7f 0%, #d457ec 100%);
-  background: linear-gradient(to bottom, #d45f7f 0%, #d457ec 100%);
   line-height: 1.5; }
 
 .header {
@@ -95,7 +95,7 @@ body {
   .menu__list {
     margin: 0;
     padding: 0;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
     list-style-type: none;
     transform: translate3d(0, -100%, 0);
     transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
@@ -177,13 +177,14 @@ h1, h2, h3, p {
   font-weight: 400;
   color: white; }
 
-main {
+.main {
+  position: absolute;
   height: 100vh;
   display: flex;
   flex-flow: column wrap;
   justify-content: center;
   padding: 8vw; }
-  main h1 > a {
+  .main h1 > a {
     color: white;
     text-decoration: none;
     font-size: 48px;

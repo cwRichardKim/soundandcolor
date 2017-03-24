@@ -1,4 +1,12 @@
+let intro_text;
+let active;
+let isIntroTextHidden = false;
+
+const color1 = "#d45f7f";
+const color2 = "#d457ec";
+
 function initialize() {
+  intro_text = d3.selectAll(".intro-text");
   var Menu = (function() {
     var burger = document.querySelector('.burger');
     var menu = document.querySelector('.menu');
@@ -6,9 +14,7 @@ function initialize() {
     var graphs = document.querySelector('.menu__graphs');
     var menuItems = document.querySelectorAll('.menu__item');
 
-    console.log(burger);
-
-    var active = false;
+    active = false;
 
     var toggleMenu = function() {
       if (!active) {
@@ -49,8 +55,47 @@ function initialize() {
   }());
 
   Menu.init();
+
+  let color_background = d3.select("#color-background");
+  let gradient = color_background.append("defs")
+  .append("linearGradient")
+    .attr("id", "gradient")
+    .attr("x1", "50%")
+    .attr("y1", "0%")
+    .attr("x2", "50%")
+    .attr("y2", "100%")
+    .attr("spreadMethod", "pad");
+
+  gradient.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", color1)
+      .attr("stop-opacity", 1)
+      .attr("id", "color1");
+
+  gradient.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", color2)
+      .attr("stop-opacity", 1)
+      .attr("id", "color2");
+
+  color_background.append("rect")
+      .attr("width", "100%")
+      .attr("height", "100%")
+      .style("fill", "url(#gradient)");
+  color_background.transition().style("opacity", 1);
+
+}
+
+// on key hit, changes the layout slightly to fade out instructions
+function updateLayout (new_key, is_key_down, held_keys) {
+  if (!isIntroTextHidden && new_key && intro_text) {
+    isIntroTextHidden = true;
+    intro_text.transition().delay(500).duration(1000).style("opacity", 0);
+  }
 }
 
 module.exports = {
-  initialize
+  initialize,
+  updateLayout,
+  getMenuActive: () => active
 }

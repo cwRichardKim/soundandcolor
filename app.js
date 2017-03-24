@@ -22,11 +22,23 @@ $(document).ready(() => {
   keyboard.addListener(midi_sound.keyEvent);
   keyboard.addListener(key_heats.updateHeat);
   keyboard.addListener(keyboard_ui.updateKeyboardUI);
+  keyboard.addListener(layout.updateLayout)
 
   midi_input.addListener(key_heats.updateHeat);
   midi_input.addListener(keyboard_ui.updateKeyboardUI);
+  midi_input.addListener(layout.updateLayout)
+
+
   setInterval(() => {
-    heat_plot.update(key_heats.getTotalHeats());
-    probs_graph.update(simple_model.modeScaleValues(key_heats.getTotalHeats()));
+    let total_heats = key_heats.getTotalHeats();
+    let probs_matrix = simple_model.modeScaleValues(total_heats);
+
+    // only processes this stuff if the user is looking at it
+    if (layout.getMenuActive()) {
+      heat_plot.update(total_heats);
+      probs_graph.update(probs_matrix);
+    }
+
+    simple_view.updateUI(probs_matrix);
   }, 16);
 })
