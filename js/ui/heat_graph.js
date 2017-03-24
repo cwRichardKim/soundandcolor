@@ -167,21 +167,12 @@ function initialize() {
 }
 
 function updateHeatPlot(weights) {
- // 	var heat_model_values = modeScaleValues(weights);
- // 	for (var i in heat_values){
- // 		curr_heat = heat_values[i]
- // 		var cell_value = heat_model_values[curr_heat.mode][curr_heat.key_name];
- // 		heat_values[i].weight = cell_value
- // 	}
-  //
- // 	redraw(heat_values);
 
  	svg_k.selectAll(".bar").attr("fill", "red");
 	for (var key in weights){
 		var value = weights[key];
 		key = key.replace("#", "_sharp")
 		var selector = "#bar_" + key;
-		// console.log(value)
 		d3.select(selector).attr("height", value * 20)
 
 		var key_bar = d3.select("#bar_" + key)

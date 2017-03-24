@@ -1,17 +1,3 @@
-/*var key_data = [
-	{"name": "C", "val": 0},
-	{"name": "C#", "val": 0},
-	{"name": "D", "val": 0},
-	{"name": "D#", "val": 0},
-	{"name": "E", "val": 0},
-	{"name": "F", "val": 0},
-	{"name": "F#", "val": 0},
-	{"name": "G", "val": 100},
-	{"name": "G#", "val": 0},
-	{"name": "A", "val": 0},
-	{"name": "A#", "val": 0},
-	{"name": "B", "val" : 0}
-]*/
 const key_indices = {
   "C": 0,
   "C#": 1,
@@ -44,7 +30,7 @@ const color_map = {
 
 const margin = {top: 40, right: 10, bottom: 30, left: 10};
 const width = 5//d3.select("#probs-graph").node().getBoundingClientRect().width - margin.left - margin.right;
-// width = 480 - 
+// width = 480 -
 const height = 300 - margin.top - margin.bottom;
 
 function determine_color(v){

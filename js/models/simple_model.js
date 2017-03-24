@@ -31,7 +31,7 @@ const modalities = ["Ionian",
                     "Locrian"];
 
 function mode_weights(mode) {
-    if (typeof(mode_weights.memo) == 'undefined' || 
+    if (typeof(mode_weights.memo) == 'undefined' ||
         typeof(mode_weights.memo[mode]) == 'undefined') {
         if (!mode_weights.memo) mode_weights.memo = {};
         var mode_index = modalities.indexOf(mode);
@@ -87,23 +87,3 @@ function modeScaleValues(heats) {
 module.exports = {
     modeScaleValues
 }
-
-/*
-function updateTopKey (key_heats) {
-    console.log(key_heats)
-
-    var top_val = -1
-    var top_key = "";
-
-    for (var key in key_heats) {
-        if(key_heats[key] > top_val){
-            top_key = key;
-            top_val = key_heats[key];
-        }
-    }
-    console.log("key: " + top_key)
-    $("#key-guess").html("<h1>" + top_key + "</h1>")
-    $("#keyboard").css("background-color", color_map[top_key]);
-}
-
-*/

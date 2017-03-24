@@ -81,12 +81,10 @@ function updateHeat(octave_key, is_key_down, holding) {
     let key = stripNoteOctave(octave_key);
     octaved_key_heats[key.note][key.octave] += 1.;
   }
-  //updateHeatPlot(total_key_heats);
 }
 
 setInterval(function(){
     decayNotes();
-    //updateHeatPlot(total_key_heats);
 }, 20);
 
 module.exports = {

@@ -249,12 +249,10 @@ function updateHeat(octave_key, is_key_down, holding) {
     let key = stripNoteOctave(octave_key);
     octaved_key_heats[key.note][key.octave] += 1.;
   }
-  //updateHeatPlot(total_key_heats);
 }
 
 setInterval(function () {
   decayNotes();
-  //updateHeatPlot(total_key_heats);
 }, 20);
 
 module.exports = {
@@ -344,26 +342,6 @@ function modeScaleValues(heats) {
 module.exports = {
     modeScaleValues
 };
-
-/*
-function updateTopKey (key_heats) {
-    console.log(key_heats)
-
-    var top_val = -1
-    var top_key = "";
-
-    for (var key in key_heats) {
-        if(key_heats[key] > top_val){
-            top_key = key;
-            top_val = key_heats[key];
-        }
-    }
-    console.log("key: " + top_key)
-    $("#key-guess").html("<h1>" + top_key + "</h1>")
-    $("#keyboard").css("background-color", color_map[top_key]);
-}
-
-*/
 
 },{}],6:[function(require,module,exports){
 // In the process of refactoring this file into a module
@@ -476,21 +454,12 @@ function initialize() {
 }
 
 function updateHeatPlot(weights) {
-  // 	var heat_model_values = modeScaleValues(weights);
-  // 	for (var i in heat_values){
-  // 		curr_heat = heat_values[i]
-  // 		var cell_value = heat_model_values[curr_heat.mode][curr_heat.key_name];
-  // 		heat_values[i].weight = cell_value
-  // 	}
-  //
-  // 	redraw(heat_values);
 
   svg_k.selectAll(".bar").attr("fill", "red");
   for (var key in weights) {
     var value = weights[key];
     key = key.replace("#", "_sharp");
     var selector = "#bar_" + key;
-    // console.log(value)
     d3.select(selector).attr("height", value * 20);
 
     var key_bar = d3.select("#bar_" + key);
@@ -533,18 +502,7 @@ const on_screen_keys = {
   "4-F": true
 };
 
-// let key_list = [];
 let KEYLISTMAX = 10;
-
-// function fillToFive(input_str){
-// 	if(input_str.length > 5){
-// 		return input_str
-// 	}
-// 	for(var i = input_str.length; i < 5; i++){
-// 		input_str = "&nbsp" + input_str;
-// 	}
-// 	return input_str;
-// }
 
 function updateKeyboardUI(octave_key, is_key_down, holding) {
   if (octave_key != null) {
@@ -567,36 +525,6 @@ function findSVGKey(key_name) {
   }
   return "octave-" + key_name + "-key";
 }
-
-// function keyListToString() {
-// 	ret_string = ""
-// 	var start_index = (key_list.length - KEYLISTMAX) < 0 ?
-// 		              0 : key_list.length - KEYLISTMAX
-// 	for (i = start_index; i < key_list.length; i++){
-// 		if(i == key_list.length - 1){
-// 			ret_string += " <span id='currentKey'>" + fillToFive(key_list[i]) + "</span>"
-// 		} else {
-// 			ret_string += fillToFive(key_list[i]);
-// 		}
-// 	}
-// 	return ret_string;
-// }
-
-// Processes heats and graphs. Does not process sounds. Called every key up and
-// down event. should deal with both keyboard and midi
-// new_key_down: if this is a keydown event, includes the new (musical) key (eg: 2-C)
-// holding: contains all the (musical) keys still playing (eg: 2-C)
-// function updatePlayer(new_key_down, holding) {
-//   // hold note longer if it is in holding
-//   // process audio here too so we don't get multiple notes for one keydown
-// 	updateHeat(new_key_down, holding);
-//   if (new_key_down) {
-//     updateKeyList(new_key_down);
-// 		// majorScaleValues(key_heats);
-// 		$("#key_stream").html(keyListToString());
-//   }
-// }
-
 
 function initialize() {
   x = d3.scaleBand().range([0, width]).padding(0.1);
@@ -642,15 +570,6 @@ function initialize() {
   });
 
   svg = d3.select('#svg-keyboard');
-
-  // navigator
-  //   .requestMIDIAccess()
-  //   .then(
-  //     midi => {
-  //     	var FIRST = midi.inputs.values().next().value;
-  // 			FIRST.addEventListener('midimessage', midiHandler);
-  //     }
-  //   );
 }
 
 module.exports = {
@@ -698,20 +617,6 @@ module.exports = {
 };
 
 },{}],9:[function(require,module,exports){
-/*var key_data = [
-	{"name": "C", "val": 0},
-	{"name": "C#", "val": 0},
-	{"name": "D", "val": 0},
-	{"name": "D#", "val": 0},
-	{"name": "E", "val": 0},
-	{"name": "F", "val": 0},
-	{"name": "F#", "val": 0},
-	{"name": "G", "val": 100},
-	{"name": "G#", "val": 0},
-	{"name": "A", "val": 0},
-	{"name": "A#", "val": 0},
-	{"name": "B", "val" : 0}
-]*/
 const key_indices = {
   "C": 0,
   "C#": 1,
@@ -744,7 +649,7 @@ const color_map = {
 
 const margin = { top: 40, right: 10, bottom: 30, left: 10 };
 const width = 5; //d3.select("#probs-graph").node().getBoundingClientRect().width - margin.left - margin.right;
-// width = 480 - 
+// width = 480 -
 const height = 300 - margin.top - margin.bottom;
 
 function determine_color(v) {
