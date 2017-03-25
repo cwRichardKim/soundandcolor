@@ -22,13 +22,25 @@ let simple_key_weights = [1.5, 0.1, 0.6, 0.3, 0.8, 0.1, 0.2];
 let out_of_key_weight = 0.05;
 const major_intervals = [2,2,1,2,2,2,1]
 
-const modalities = ["Ionian",
-                    "Dorian",
-                    "Phrygian",
-                    "Lydian",
-                    "Mixolydian",
-                    "Aeolian",
-                    "Locrian"];
+const modalities = [
+  "Ionian",
+  "Dorian",
+  "Phrygian",
+  "Lydian",
+  "Mixolydian",
+  "Aeolian",
+  "Locrian"
+];
+
+const mode_bias = {
+  "Ionian": 1.0,
+  "Dorian": 0.99,
+  "Phrygian": 0.95,
+  "Lydian": 0.95,
+  "Mixolydian": 0.95,
+  "Aeolian": 0.95,
+  "Locrian": 0.95
+};
 
 function mode_weights(mode) {
     if (typeof(mode_weights.memo) == 'undefined' ||
@@ -53,7 +65,7 @@ function modeScaleValue(heats, mode, scale) {
         let key = key_order[key_i];
         value += heats[key] / (mode_weights(mode)[key_index(key, scale)]);
     }
-    return 10. / value;
+    return 10. / value * mode_bias[mode];
 }
 
 // function that returns the mode / scale weights object

@@ -252,6 +252,8 @@ function decayNotes(holding) {
     for (var o_i in octaved_key_heats[n_i]) {
       if (!decayNotes.holding || !decayNotes.holding.includes(o_i + "-" + n_i)) {
         octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt);
+      } else if (decayNotes.holding) {
+        octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt / 4);
       }
     }
   }
@@ -302,6 +304,16 @@ const major_intervals = [2, 2, 1, 2, 2, 2, 1];
 
 const modalities = ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"];
 
+const mode_bias = {
+    "Ionian": 1.0,
+    "Dorian": 0.99,
+    "Phrygian": 0.95,
+    "Lydian": 0.95,
+    "Mixolydian": 0.95,
+    "Aeolian": 0.95,
+    "Locrian": 0.95
+};
+
 function mode_weights(mode) {
     if (typeof mode_weights.memo == 'undefined' || typeof mode_weights.memo[mode] == 'undefined') {
         if (!mode_weights.memo) mode_weights.memo = {};
@@ -323,7 +335,7 @@ function modeScaleValue(heats, mode, scale) {
         let key = key_order[key_i];
         value += heats[key] / mode_weights(mode)[key_index(key, scale)];
     }
-    return 10. / value;
+    return 10. / value * mode_bias[mode];
 }
 
 // function that returns the mode / scale weights object
@@ -828,14 +840,14 @@ const key_colors_map = {
   "G#": "RGB(229, 65, 40)",
   "A": "RGB(254, 105, 13)",
   "A#": "RGB(255, 149, 55)",
-  "B": "RGB(255, 168, 35))"
+  "B": "RGB(255, 168, 35)"
 };
 
 const mode_colors = {
   "Ionian": "RGB(254, 220, 1)",
-  "Dorian": "RGB(55, 171, 88)",
+  "Dorian": "RGB(3, 71, 132)",
   "Phrygian": "RGB(3, 125, 149)",
-  "Lydian": "RGB(0, 30, 103)",
+  "Lydian": "RGB(55, 171, 88)",
   "Mixolydian": "RGB(126, 13, 129)",
   "Aeolian": "RGB(200, 17, 107)",
   "Locrian": "RGB(254, 105, 13)"

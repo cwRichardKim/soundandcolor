@@ -15,14 +15,14 @@ const key_colors_map = {
   "G#": "RGB(229, 65, 40)",
   "A": "RGB(254, 105, 13)",
   "A#": "RGB(255, 149, 55)",
-  "B": "RGB(255, 168, 35))"
+  "B": "RGB(255, 168, 35)"
 }
 
 const mode_colors = {
   "Ionian": "RGB(254, 220, 1)",
-  "Dorian": "RGB(55, 171, 88)",
+  "Dorian": "RGB(3, 71, 132)",
   "Phrygian": "RGB(3, 125, 149)",
-  "Lydian": "RGB(0, 30, 103)",
+  "Lydian": "RGB(55, 171, 88)",
   "Mixolydian": "RGB(126, 13, 129)",
   "Aeolian": "RGB(200, 17, 107)",
   "Locrian": "RGB(254, 105, 13)",
