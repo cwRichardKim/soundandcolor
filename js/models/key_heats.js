@@ -1,4 +1,5 @@
 const DECAY_RATE = -0.001;
+const HOLDING_MULTIPLIER = 4.;
 
 // heats with incorporated octaves
 // format: {C: {0: 0., 1: 0., ...}, C#: {...}, ...}
@@ -70,7 +71,7 @@ function decayNotes(holding) {
       if (!decayNotes.holding || !decayNotes.holding.includes(o_i+"-"+n_i)) {
         octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt);
       } else if (decayNotes.holding) {
-        octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt / 4);
+        octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt / HOLDING_MULTIPLIER);
       }
     }
   }
