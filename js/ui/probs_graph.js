@@ -13,20 +13,6 @@ const key_indices = {
   "B": 11
 }
 
-const color_map = {
-  "C": "rgb(40, 0, 120)",
-  "C#": "rgb(50, 20, 110)",
-  "D": "rgb(60, 40, 100)",
-  "D#": "rgb(70, 60, 90)",
-  "E": "rgb(80, 80, 80)",
-  "F": "rgb(90, 100, 70)",
-  "F#": "rgb(100, 120, 60)",
-  "G": "rgb(110, 140, 50)",
-  "G#": "rgb(120, 160, 40)",
-  "A": "rgb(130, 180, 30)",
-  "A#": "rgb(140, 200, 20)",
-  "B": "rgb(150, 220, 10)"
-}
 
 const margin = {top: 40, right: 10, bottom: 30, left: 10};
 const width = 5//d3.select("#probs-graph").node().getBoundingClientRect().width - margin.left - margin.right;

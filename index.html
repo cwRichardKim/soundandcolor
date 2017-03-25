@@ -30,29 +30,45 @@
 	</head>
 
 	<body>
-		<div class="sc-header">
-			<h1>Sound and Color</h1>
-			<h2><small>A Music Visualization Project</small></h2>
-			<hr/>
+		<svg id="color-background"></svg>
+		<header class="header">
+		  <div class="burger">
+		    <div class="burger__patty"></div>
+		    <div class="burger__patty"></div>
+		    <div class="burger__patty"></div>
+		  </div>
+
+		  <nav class="menu">
+
+		    <div class="menu__graphs">
+
+					<div class="container">
+						<div class="row" id="key-graph"></div>
+						<div class="row" id="heat-graph"></div>
+						<div class="row keyboard-container">
+							<div id="keyboard"></div>
+						</div>
+					</div>
+
+		    </div>
+
+		    <ul class="menu__list">
+					<div class="sc-header">
+						<h1>Sound and Color</h1>
+						<p>A Music Visualization Project</p>
+					</div>
+		      <li class="menu__item"><a href="https://github.com/soundandcolor/soundandcolor/blob/master/README.md" class="menu__link">About</a></li>
+		      <li class="menu__item"><a href="" class="menu__link">Settings</a></li>
+		      <li class="menu__item"><a href="https://github.com/soundandcolor/soundandcolor" class="menu__link">Code</a></li>
+		    </ul>
+		  </nav>
+		</header>
+
+		<div class="main">
+		  <h1 class="intro-text">Sound && Color</h1>
+		  <h3 class="intro-text">Use a midi or QWERTY keyboard (type "asdf" or check the menu for help)</h3>
+		  <p class="support intro-text">Currently only supports Chrome Desktop</p>
 		</div>
-
-		<div class="container">
-			<div class="row" id="graphs">
-			  	<div class="col-sm-8" id="heat-graph"></div>
-			  	<div class="col-sm-4" id="key-graph"></div>
-			</div>
-		</div>
-
-		<div class="keyboard-container">
-			<div id="keyboard"></div>
-			<hr/>
-		</div>
-
-		<p>
-			<a href="https://github.com/soundandcolor/soundandcolor">Repository</a>
-			<a href="https://github.com/soundandcolor/soundandcolor/blob/master/README.md">README</a>
-		</p>
-
-    <script src="bundle.js"></script>
 	</body>
+	<script src="bundle.js"></script>
 </html>

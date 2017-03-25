@@ -5,30 +5,45 @@ const midi_sound = require('./js/ui/midi_sound');
 const key_heats = require('./js/models/key_heats');
 const simple_model = require('./js/models/simple_model');
 const heat_plot = require('./js/ui/heat_graph');
-const keyboard_ui = require('./js/ui/keyboard_ui.js');
+const keyboard_ui = require('./js/ui/keyboard_ui');
 const probs_graph = require('./js/ui/probs_graph');
+const simple_view = require('./js/ui/simple_view');
+const layout = require('./js/ui/layout');
 
 $(document).ready(() => {
+  layout.initialize();
   keyboard.initialize();
   midi_input.initialize();
   keyboard_ui.initialize();
   midi_sound.initialize();
   heat_plot.initialize();
   probs_graph.initialize();
+  simple_view.initialize();
 
   keyboard.addListener(midi_sound.keyEvent);
   keyboard.addListener(key_heats.updateHeat);
   keyboard.addListener(keyboard_ui.updateKeyboardUI);
+  keyboard.addListener(layout.updateLayout);
 
   midi_input.addListener(key_heats.updateHeat);
   midi_input.addListener(keyboard_ui.updateKeyboardUI);
+  midi_input.addListener(layout.updateLayout);
+
   setInterval(() => {
-    heat_plot.update(key_heats.getTotalHeats());
-    probs_graph.update(simple_model.modeScaleValues(key_heats.getTotalHeats()));
+    let total_heats = key_heats.getTotalHeats();
+    let probs_matrix = simple_model.modeScaleValues(total_heats);
+
+    // only processes this stuff if the user is looking at it
+    if (layout.getMenuActive()) {
+      heat_plot.update(total_heats);
+      probs_graph.update(probs_matrix);
+    }
+
+    simple_view.updateUI(probs_matrix);
   }, 16);
 });
 
-},{"./js/inputs/keyboard":2,"./js/inputs/midi":3,"./js/models/key_heats":4,"./js/models/simple_model":5,"./js/ui/heat_graph":6,"./js/ui/keyboard_ui.js":7,"./js/ui/midi_sound":8,"./js/ui/probs_graph":9}],2:[function(require,module,exports){
+},{"./js/inputs/keyboard":2,"./js/inputs/midi":3,"./js/models/key_heats":4,"./js/models/simple_model":5,"./js/ui/heat_graph":6,"./js/ui/keyboard_ui":7,"./js/ui/layout":8,"./js/ui/midi_sound":9,"./js/ui/probs_graph":10,"./js/ui/simple_view":11}],2:[function(require,module,exports){
 var keys = {
     "a": "3-C",
     "w": "3-C#",
@@ -237,6 +252,8 @@ function decayNotes(holding) {
     for (var o_i in octaved_key_heats[n_i]) {
       if (!decayNotes.holding || !decayNotes.holding.includes(o_i + "-" + n_i)) {
         octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt);
+      } else if (decayNotes.holding) {
+        octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt / 4);
       }
     }
   }
@@ -287,6 +304,16 @@ const major_intervals = [2, 2, 1, 2, 2, 2, 1];
 
 const modalities = ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"];
 
+const mode_bias = {
+    "Ionian": 1.0,
+    "Dorian": 0.99,
+    "Phrygian": 0.95,
+    "Lydian": 0.95,
+    "Mixolydian": 0.95,
+    "Aeolian": 0.95,
+    "Locrian": 0.95
+};
+
 function mode_weights(mode) {
     if (typeof mode_weights.memo == 'undefined' || typeof mode_weights.memo[mode] == 'undefined') {
         if (!mode_weights.memo) mode_weights.memo = {};
@@ -308,7 +335,7 @@ function modeScaleValue(heats, mode, scale) {
         let key = key_order[key_i];
         value += heats[key] / mode_weights(mode)[key_index(key, scale)];
     }
-    return 10. / value;
+    return 10. / value * mode_bias[mode];
 }
 
 // function that returns the mode / scale weights object
@@ -474,13 +501,15 @@ module.exports = {
 };
 
 },{}],7:[function(require,module,exports){
-const svg_keys = [{ id: "octave-3-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "a", stroke: "#555555", fill: "#FFFFF7", x: 0, y: 0, width: 80, height: 400 }, { id: "octave-3-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "s", stroke: "#555555", fill: "#FFFFF7", x: 80, y: 0, width: 80, height: 400 }, { id: "octave-3-E-key", class: "piano-key white-key", data_key: "E", keyboard_key: "d", stroke: "#555555", fill: "#FFFFF7", x: 160, y: 0, width: 80, height: 400 }, { id: "octave-3-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "f", stroke: "#555555", fill: "#FFFFF7", x: 240, y: 0, width: 80, height: 400 }, { id: "octave-3-G-key", class: "piano-key white-key", data_key: "G", keyboard_key: "g", stroke: "#555555", fill: "#FFFFF7", x: 320, y: 0, width: 80, height: 400 }, { id: "octave-3-A-key", class: "piano-key white-key", data_key: "A", keyboard_key: "h", stroke: "#555555", fill: "#FFFFF7", x: 400, y: 0, width: 80, height: 400 }, { id: "octave-3-B-key", class: "piano-key white-key", data_key: "B", keyboard_key: "j", stroke: "#555555", fill: "#FFFFF7", x: 480, y: 0, width: 80, height: 400 }, { id: "octave-3-C#-key", class: "piano-key black-key", data_key: "C#", keyboard_key: "w", stroke: "#555555", fill: "#4B4B4B", x: 60, y: 0, width: 40, height: 280 }, { id: "octave-3-D#-key", class: "piano-key black-key", data_key: "D#", keyboard_key: "e", stroke: "#555555", fill: "#4B4B4B", x: 140, y: 0, width: 40, height: 280 }, { id: "octave-3-F#-key", class: "piano-key black-key", data_key: "F#", keyboard_key: "t", stroke: "#555555", fill: "#4B4B4B", x: 300, y: 0, width: 40, height: 280 }, { id: "octave-3-G#-key", class: "piano-key black-key", data_key: "G#", keyboard_key: "y", stroke: "#555555", fill: "#4B4B4B", x: 380, y: 0, width: 40, height: 280 }, { id: "octave-3-A#-key", class: "piano-key black-key", data_key: "A#", keyboard_key: "u", stroke: "#555555", fill: "#4B4B4B", x: 460, y: 0, width: 40, height: 280 }, { id: "octave-4-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "k", stroke: "#555555", fill: "#FFFFF7", x: 560, y: 0, width: 80, height: 400 }, { id: "octave-4-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "l", stroke: "#555555", fill: "#FFFFF7", x: 640, y: 0, width: 80, height: 400 }, { id: "octave-4-E-key", class: "piano-key white-key", data_key: "E", keyboard_key: ";", stroke: "#555555", fill: "#FFFFF7", x: 720, y: 0, width: 80, height: 400 }, { id: "octave-4-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "/'", stroke: "#555555", fill: "#FFFFF7", x: 800, y: 0, width: 80, height: 400 }, { id: "octave-4-C#-key", class: "piano-key black-key", data_key: "C#", keyboard_key: "o", stroke: "#555555", fill: "#4B4B4B", x: 620, y: 0, width: 40, height: 280 }, { id: "octave-4-D#-key", class: "piano-key black-key", data_key: "D#", keyboard_key: "p", stroke: "#555555", fill: "#4B4B4B", x: 700, y: 0, width: 40, height: 280 }];
+const key_width = 50;
+const key_height = 150;
+const svg_keys = [{ id: "octave-3-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "a", stroke: "#555555", fill: "#FFFFF7", x: 0, y: 0, width: key_width, height: key_height }, { id: "octave-3-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "s", stroke: "#555555", fill: "#FFFFF7", x: key_width, y: 0, width: key_width, height: key_height }, { id: "octave-3-E-key", class: "piano-key white-key", data_key: "E", keyboard_key: "d", stroke: "#555555", fill: "#FFFFF7", x: key_width * 2, y: 0, width: key_width, height: key_height }, { id: "octave-3-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "f", stroke: "#555555", fill: "#FFFFF7", x: key_width * 3, y: 0, width: key_width, height: key_height }, { id: "octave-3-G-key", class: "piano-key white-key", data_key: "G", keyboard_key: "g", stroke: "#555555", fill: "#FFFFF7", x: key_width * 4, y: 0, width: key_width, height: key_height }, { id: "octave-3-A-key", class: "piano-key white-key", data_key: "A", keyboard_key: "h", stroke: "#555555", fill: "#FFFFF7", x: key_width * 5, y: 0, width: key_width, height: key_height }, { id: "octave-3-B-key", class: "piano-key white-key", data_key: "B", keyboard_key: "j", stroke: "#555555", fill: "#FFFFF7", x: key_width * 6, y: 0, width: key_width, height: key_height }, { id: "octave-3-C#-key", class: "piano-key black-key", data_key: "C#", keyboard_key: "w", stroke: "#555555", fill: "#4B4B4B", x: key_width * .75, y: 0, width: key_width / 2, height: key_height * .75 }, { id: "octave-3-D#-key", class: "piano-key black-key", data_key: "D#", keyboard_key: "e", stroke: "#555555", fill: "#4B4B4B", x: key_width * 1.75, y: 0, width: key_width / 2, height: key_height * .75 }, { id: "octave-3-F#-key", class: "piano-key black-key", data_key: "F#", keyboard_key: "t", stroke: "#555555", fill: "#4B4B4B", x: key_width * 3.75, y: 0, width: key_width / 2, height: key_height * .75 }, { id: "octave-3-G#-key", class: "piano-key black-key", data_key: "G#", keyboard_key: "y", stroke: "#555555", fill: "#4B4B4B", x: key_width * 4.75, y: 0, width: key_width / 2, height: key_height * .75 }, { id: "octave-3-A#-key", class: "piano-key black-key", data_key: "A#", keyboard_key: "u", stroke: "#555555", fill: "#4B4B4B", x: key_width * 5.75, y: 0, width: key_width / 2, height: key_height * .75 }, { id: "octave-4-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "k", stroke: "#555555", fill: "#FFFFF7", x: key_width * 7, y: 0, width: key_width, height: key_height }, { id: "octave-4-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "l", stroke: "#555555", fill: "#FFFFF7", x: key_width * 8, y: 0, width: key_width, height: key_height }, { id: "octave-4-E-key", class: "piano-key white-key", data_key: "E", keyboard_key: ";", stroke: "#555555", fill: "#FFFFF7", x: key_width * 9, y: 0, width: key_width, height: key_height }, { id: "octave-4-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "\'", stroke: "#555555", fill: "#FFFFF7", x: key_width * 10, y: 0, width: key_width, height: key_height }, { id: "octave-4-C#-key", class: "piano-key black-key", data_key: "C#", keyboard_key: "o", stroke: "#555555", fill: "#4B4B4B", x: key_width * 7.75, y: 0, width: key_width / 2, height: key_height * .75 }, { id: "octave-4-D#-key", class: "piano-key black-key", data_key: "D#", keyboard_key: "p", stroke: "#555555", fill: "#4B4B4B", x: key_width * 8.75, y: 0, width: key_width / 2, height: key_height * .75 }];
 let x;
 let y;
 let svg;
 let margin = { top: 40, right: 20, bottom: 30, left: 40 },
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    width = key_width * 11 + margin.left + margin.right,
+    height = key_height + margin.top + margin.bottom;
 const on_screen_keys = {
   "3-C": true,
   "3-C#": true,
@@ -552,14 +581,14 @@ function initialize() {
 
   svg.selectAll(".black-key .white-key").data(svg_keys).enter().append("text").attr("x", function (d) {
     if (d.class.includes("black-key")) {
-      return d.x + 15;
+      return d.x + key_width / 4 - 5;
     }
-    return d.x + 15;
+    return d.x + key_width / 2 - 5;
   }).attr("y", function (d) {
     if (d.class.includes("black-key")) {
-      return d.y + 240;
+      return d.y + key_height * .75 - 15;
     }
-    return d.y + 360;
+    return d.y + key_height - 15;
   }).attr("font-family", "helvetica").attr("fill", function (d) {
     if (d.class.includes("black-key")) {
       return "white";
@@ -578,6 +607,89 @@ module.exports = {
 };
 
 },{}],8:[function(require,module,exports){
+let intro_text;
+let active;
+let isIntroTextHidden = false;
+
+const color1 = "#d45f7f";
+const color2 = "#d457ec";
+
+function initialize() {
+  intro_text = d3.selectAll(".intro-text");
+  var Menu = function () {
+    var burger = document.querySelector('.burger');
+    var menu = document.querySelector('.menu');
+    var menuList = document.querySelector('.menu__list');
+    var graphs = document.querySelector('.menu__graphs');
+    var menuItems = document.querySelectorAll('.menu__item');
+
+    active = false;
+
+    var toggleMenu = function () {
+      if (!active) {
+        menu.classList.add('menu--active');
+        menuList.classList.add('menu__list--active');
+        graphs.classList.add('menu__graphs--active');
+        burger.classList.add('burger--close');
+        for (var i = 0, ii = menuItems.length; i < ii; i++) {
+          menuItems[i].classList.add('menu__item--active');
+        }
+
+        active = true;
+      } else {
+        menu.classList.remove('menu--active');
+        menuList.classList.remove('menu__list--active');
+        graphs.classList.remove('menu__graphs--active');
+        burger.classList.remove('burger--close');
+        for (var i = 0, ii = menuItems.length; i < ii; i++) {
+          menuItems[i].classList.remove('menu__item--active');
+        }
+
+        active = false;
+      }
+    };
+
+    var bindActions = function () {
+      burger.addEventListener('click', toggleMenu, false);
+    };
+
+    var init = function () {
+      bindActions();
+    };
+
+    return {
+      init: init
+    };
+  }();
+
+  Menu.init();
+
+  let color_background = d3.select("#color-background");
+  let gradient = color_background.append("defs").append("linearGradient").attr("id", "gradient").attr("x1", "50%").attr("y1", "0%").attr("x2", "50%").attr("y2", "100%").attr("spreadMethod", "pad");
+
+  gradient.append("stop").attr("offset", "0%").attr("stop-color", color1).attr("stop-opacity", 1).attr("id", "color1");
+
+  gradient.append("stop").attr("offset", "100%").attr("stop-color", color2).attr("stop-opacity", 1).attr("id", "color2");
+
+  color_background.append("rect").attr("width", "100%").attr("height", "100%").style("fill", "url(#gradient)");
+  color_background.transition().style("opacity", 1);
+}
+
+// on key hit, changes the layout slightly to fade out instructions
+function updateLayout(new_key, is_key_down, held_keys) {
+  if (!isIntroTextHidden && new_key && intro_text) {
+    isIntroTextHidden = true;
+    intro_text.transition().delay(500).duration(1000).style("opacity", 0);
+  }
+}
+
+module.exports = {
+  initialize,
+  updateLayout,
+  getMenuActive: () => active
+};
+
+},{}],9:[function(require,module,exports){
 function generateMIDIMAP() {
     let notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     midimap = {};
@@ -616,7 +728,7 @@ module.exports = {
     keyEvent
 };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 const key_indices = {
   "C": 0,
   "C#": 1,
@@ -630,21 +742,6 @@ const key_indices = {
   "A": 9,
   "A#": 10,
   "B": 11
-};
-
-const color_map = {
-  "C": "rgb(40, 0, 120)",
-  "C#": "rgb(50, 20, 110)",
-  "D": "rgb(60, 40, 100)",
-  "D#": "rgb(70, 60, 90)",
-  "E": "rgb(80, 80, 80)",
-  "F": "rgb(90, 100, 70)",
-  "F#": "rgb(100, 120, 60)",
-  "G": "rgb(110, 140, 50)",
-  "G#": "rgb(120, 160, 40)",
-  "A": "rgb(130, 180, 30)",
-  "A#": "rgb(140, 200, 20)",
-  "B": "rgb(150, 220, 10)"
 };
 
 const margin = { top: 40, right: 10, bottom: 30, left: 10 };
@@ -723,6 +820,84 @@ function updateKeyProbs(model_values) {
 module.exports = {
   initialize,
   update: updateKeyProbs
+};
+
+},{}],11:[function(require,module,exports){
+let color_top;
+let color_bottom;
+
+// http://www.cleansingfire.org/wp-content/uploads/2012/12/wheel-2.jpg\
+// consider: http://www.easy-oil-painting-techniques.org/images/colorwheel12point.jpg
+const key_colors_map = {
+  "C": "RGB(254, 220, 1)",
+  "C#": "RGB(178, 209, 30)",
+  "D": "RGB(8, 128, 116)",
+  "D#": "RGB(3, 125, 149)",
+  "E": "RGB(3, 71, 132)",
+  "F": "RGB(0, 30, 103)",
+  "F#": "RGB(126, 13, 129)",
+  "G": "RGB(200, 17, 107)",
+  "G#": "RGB(229, 65, 40)",
+  "A": "RGB(254, 105, 13)",
+  "A#": "RGB(255, 149, 55)",
+  "B": "RGB(255, 168, 35)"
+};
+
+const mode_colors = {
+  "Ionian": "RGB(254, 220, 1)",
+  "Dorian": "RGB(3, 71, 132)",
+  "Phrygian": "RGB(3, 125, 149)",
+  "Lydian": "RGB(55, 171, 88)",
+  "Mixolydian": "RGB(126, 13, 129)",
+  "Aeolian": "RGB(200, 17, 107)",
+  "Locrian": "RGB(254, 105, 13)"
+};
+
+function initialize() {
+  color_background = d3.select("#color-background");
+  gradient = color_background.select("#gradient");
+  color_top = gradient.select("#color1");
+  color_bottom = gradient.select("#color2");
+}
+
+function extractTopKeyModeConfidence(probs_matrix) {
+  let top_key = null;
+  let top_mode = null;
+  confidence = 0.;
+  total = 0.;
+
+  for (var mode in probs_matrix) {
+    for (var key in probs_matrix[mode]) {
+      let temp_conf = probs_matrix[mode][key];
+      total += temp_conf;
+      if (temp_conf > confidence) {
+        confidence = temp_conf;
+        top_key = key;
+        top_mode = mode;
+      }
+    }
+  }
+  return [top_key, top_mode, confidence / total];
+}
+
+function updateUI(probs_matrix, velocity) {
+  if (probs_matrix) {
+    let [top_key, top_mode, confidence] = extractTopKeyModeConfidence(probs_matrix);
+    if (top_key && top_mode && confidence > 0.) {
+      let color1 = key_colors_map[top_key];
+      let color2 = mode_colors[top_mode];
+
+      let duration = Math.max(1 / Math.pow(confidence, 2), 500);
+
+      color_top.transition().duration(100).attr("stop-color", color1);
+      color_bottom.transition().duration(100).attr("stop-color", color2);
+    }
+  }
+}
+
+module.exports = {
+  initialize,
+  updateUI
 };
 
 },{}]},{},[1]);
