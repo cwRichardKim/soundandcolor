@@ -42,8 +42,20 @@ svg {
 	margin: auto;
 }
 
+#key-weights {
+  bottom: 30px;
+  height: 250px;
+}
+
+#key-weights input {
+  width: 70%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
 .keyboard-container {
 	margin: 0px;
+  margin-bottom: 10px;
 }
 
 #keyboard {
@@ -227,6 +239,7 @@ body {
   float: none;
   width: 100%;
   min-height: 0;
+  overflow-y: scroll;
 
    &--active {
      transform: translate3d(0, 0, 0);

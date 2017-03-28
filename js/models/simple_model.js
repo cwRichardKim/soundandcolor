@@ -19,6 +19,7 @@ function key_index(key, scale) {
 }
 
 let simple_key_weights = [1.5, 0.1, 0.6, 0.3, 0.8, 0.1, 0.2];
+
 let out_of_key_weight = 0.05;
 const major_intervals = [2,2,1,2,2,2,1]
 
@@ -42,7 +43,15 @@ const mode_bias = {
   "Locrian": 0.95
 };
 
+function updateKeyWeight(keyIndex, newValue) {
+  simple_key_weights[keyIndex] = newValue;
+
+  console.log(simple_key_weights);
+}
+
+
 function mode_weights(mode) {
+  // console.log(simple_key_weights);
     if (typeof(mode_weights.memo) == 'undefined' ||
         typeof(mode_weights.memo[mode]) == 'undefined') {
         if (!mode_weights.memo) mode_weights.memo = {};
@@ -97,5 +106,7 @@ function modeScaleValues(heats) {
 }
 
 module.exports = {
-    modeScaleValues
+    modeScaleValues,
+    updateKeyWeight,
+    getKeyWeights: () => simple_key_weights
 }

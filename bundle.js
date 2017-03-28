@@ -9,6 +9,7 @@ const keyboard_ui = require('./js/ui/keyboard_ui');
 const probs_graph = require('./js/ui/probs_graph');
 const simple_view = require('./js/ui/simple_view');
 const layout = require('./js/ui/layout');
+const keyweight_sliders = require('./js/ui/keyweight_sliders');
 
 $(document).ready(() => {
   layout.initialize();
@@ -19,6 +20,7 @@ $(document).ready(() => {
   heat_plot.initialize();
   probs_graph.initialize();
   simple_view.initialize();
+  keyweight_sliders.initialize(simple_model.getKeyWeights());
 
   keyboard.addListener(midi_sound.keyEvent);
   keyboard.addListener(key_heats.updateHeat);
@@ -28,6 +30,8 @@ $(document).ready(() => {
   midi_input.addListener(key_heats.updateHeat);
   midi_input.addListener(keyboard_ui.updateKeyboardUI);
   midi_input.addListener(layout.updateLayout);
+
+  keyweight_sliders.addListener(simple_model.updateKeyWeight);
 
   setInterval(() => {
     let total_heats = key_heats.getTotalHeats();
@@ -43,7 +47,7 @@ $(document).ready(() => {
   }, 16);
 });
 
-},{"./js/inputs/keyboard":2,"./js/inputs/midi":3,"./js/models/key_heats":4,"./js/models/simple_model":5,"./js/ui/heat_graph":6,"./js/ui/keyboard_ui":7,"./js/ui/layout":8,"./js/ui/midi_sound":9,"./js/ui/probs_graph":10,"./js/ui/simple_view":11}],2:[function(require,module,exports){
+},{"./js/inputs/keyboard":2,"./js/inputs/midi":3,"./js/models/key_heats":4,"./js/models/simple_model":5,"./js/ui/heat_graph":6,"./js/ui/keyboard_ui":7,"./js/ui/keyweight_sliders":8,"./js/ui/layout":9,"./js/ui/midi_sound":10,"./js/ui/probs_graph":11,"./js/ui/simple_view":12}],2:[function(require,module,exports){
 var keys = {
     "a": "3-C",
     "w": "3-C#",
@@ -182,6 +186,7 @@ module.exports = {
 
 },{}],4:[function(require,module,exports){
 const DECAY_RATE = -0.001;
+const HOLDING_MULTIPLIER = 4.;
 
 // heats with incorporated octaves
 // format: {C: {0: 0., 1: 0., ...}, C#: {...}, ...}
@@ -253,7 +258,7 @@ function decayNotes(holding) {
       if (!decayNotes.holding || !decayNotes.holding.includes(o_i + "-" + n_i)) {
         octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt);
       } else if (decayNotes.holding) {
-        octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt / 4);
+        octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt / HOLDING_MULTIPLIER);
       }
     }
   }
@@ -299,6 +304,7 @@ function key_index(key, scale) {
 }
 
 let simple_key_weights = [1.5, 0.1, 0.6, 0.3, 0.8, 0.1, 0.2];
+
 let out_of_key_weight = 0.05;
 const major_intervals = [2, 2, 1, 2, 2, 2, 1];
 
@@ -314,7 +320,14 @@ const mode_bias = {
     "Locrian": 0.95
 };
 
+function updateKeyWeight(keyIndex, newValue) {
+    simple_key_weights[keyIndex] = newValue;
+
+    console.log(simple_key_weights);
+}
+
 function mode_weights(mode) {
+    // console.log(simple_key_weights);
     if (typeof mode_weights.memo == 'undefined' || typeof mode_weights.memo[mode] == 'undefined') {
         if (!mode_weights.memo) mode_weights.memo = {};
         var mode_index = modalities.indexOf(mode);
@@ -367,7 +380,9 @@ function modeScaleValues(heats) {
 }
 
 module.exports = {
-    modeScaleValues
+    modeScaleValues,
+    updateKeyWeight,
+    getKeyWeights: () => simple_key_weights
 };
 
 },{}],6:[function(require,module,exports){
@@ -507,7 +522,7 @@ const svg_keys = [{ id: "octave-3-C-key", class: "piano-key white-key", data_key
 let x;
 let y;
 let svg;
-let margin = { top: 40, right: 20, bottom: 30, left: 40 },
+let margin = { top: 40, right: 20, bottom: 10, left: 40 },
     width = key_width * 11 + margin.left + margin.right,
     height = key_height + margin.top + margin.bottom;
 const on_screen_keys = {
@@ -607,6 +622,42 @@ module.exports = {
 };
 
 },{}],8:[function(require,module,exports){
+let listeners = [];
+function callListeners(keyIndex, newValue) {
+				for (let i = 0; i < listeners.length; ++i) {
+								listeners[i](keyIndex, newValue);
+				}
+}
+
+function addListener() {
+				for (let i = 0; i < arguments.length; ++i) {
+								listeners.push(arguments[i]);
+				}
+}
+
+function initialize(origKeyWeights) {
+
+				//add sliders with values based on origKeyWeights
+				slidersHTML = "";
+				for (let i = 0; i < origKeyWeights.length; i++) {
+								slidersHTML += '<input class="weight-slider" type="range" name="' + i + '" min="0", max="4" step=".1" value=' + origKeyWeights[i] + '>';
+				}
+
+				$('#key-weights').html(slidersHTML);
+
+				$('.weight-slider').on("change", function () {
+								const keyIndex = Number(this.name);
+								const newValue = Number(this.value);
+								callListeners(keyIndex, newValue);
+				});
+}
+
+module.exports = {
+				addListener,
+				initialize
+};
+
+},{}],9:[function(require,module,exports){
 let intro_text;
 let active;
 let isIntroTextHidden = false;
@@ -689,7 +740,7 @@ module.exports = {
   getMenuActive: () => active
 };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 function generateMIDIMAP() {
     let notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     midimap = {};
@@ -728,7 +779,7 @@ module.exports = {
     keyEvent
 };
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 const key_indices = {
   "C": 0,
   "C#": 1,
@@ -822,7 +873,7 @@ module.exports = {
   update: updateKeyProbs
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 let color_top;
 let color_bottom;
 
