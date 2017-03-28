@@ -328,18 +328,20 @@ function updateKeyWeight(keyIndex, newValue) {
 
 function mode_weights(mode) {
     // console.log(simple_key_weights);
-    if (typeof mode_weights.memo == 'undefined' || typeof mode_weights.memo[mode] == 'undefined') {
-        if (!mode_weights.memo) mode_weights.memo = {};
-        var mode_index = modalities.indexOf(mode);
-        var weight_vector = Array.apply(null, Array(12)).map(Number.prototype.valueOf, out_of_key_weight);
-        var offset = 0;
-        for (var i = 0; i < 7; ++i) {
-            weight_vector[offset] = simple_key_weights[i];
-            offset += major_intervals[(mode_index + i) % 8];
-        }
-        mode_weights.memo[mode] = weight_vector;
+    //  if (typeof(mode_weights.memo) == 'undefined' ||
+    //      typeof(mode_weights.memo[mode]) == 'undefined') {
+    //      if (!mode_weights.memo) mode_weights.memo = {};
+    var mode_index = modalities.indexOf(mode);
+    var weight_vector = Array.apply(null, Array(12)).map(Number.prototype.valueOf, out_of_key_weight);
+    var offset = 0;
+    for (var i = 0; i < 7; ++i) {
+        weight_vector[offset] = simple_key_weights[i];
+        offset += major_intervals[(mode_index + i) % 8];
     }
-    return mode_weights.memo[mode];
+    //      mode_weights.memo[mode] = weight_vector;
+    return weight_vector;
+    //  }
+    //  return mode_weights.memo[mode];
 }
 
 function modeScaleValue(heats, mode, scale) {
@@ -574,7 +576,7 @@ function initialize() {
   x = d3.scaleBand().range([0, width]).padding(0.1);
   y = d3.scaleLinear().range([height, 0]);
 
-  svg = d3.select("#keyboard").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  svg = d3.select("#keyboard").append("svg").attr("viewbox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom)).attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   svg.selectAll(".key").data(svg_keys).enter().append("rect").attr("class", function (d) {
     return d.class;

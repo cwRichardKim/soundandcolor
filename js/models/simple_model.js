@@ -52,9 +52,9 @@ function updateKeyWeight(keyIndex, newValue) {
 
 function mode_weights(mode) {
   // console.log(simple_key_weights);
-    if (typeof(mode_weights.memo) == 'undefined' ||
-        typeof(mode_weights.memo[mode]) == 'undefined') {
-        if (!mode_weights.memo) mode_weights.memo = {};
+  //  if (typeof(mode_weights.memo) == 'undefined' ||
+  //      typeof(mode_weights.memo[mode]) == 'undefined') {
+  //      if (!mode_weights.memo) mode_weights.memo = {};
         var mode_index = modalities.indexOf(mode);
         var weight_vector = Array.apply(null, Array(12)).map(Number.prototype.valueOf,
                                                          out_of_key_weight)
@@ -63,9 +63,10 @@ function mode_weights(mode) {
             weight_vector[offset] = simple_key_weights[i];
             offset += major_intervals[(mode_index + i) % 8];
         }
-        mode_weights.memo[mode] = weight_vector;
-    }
-    return mode_weights.memo[mode];
+  //      mode_weights.memo[mode] = weight_vector;
+  return weight_vector;
+  //  }
+  //  return mode_weights.memo[mode];
 }
 
 function modeScaleValue(heats, mode, scale) {

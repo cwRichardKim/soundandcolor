@@ -86,6 +86,7 @@ function initialize() {
         .range([height, 0]);
 
 	svg = d3.select("#keyboard").append("svg")
+      .attr("viewbox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom))
 	    .attr("width", width + margin.left + margin.right)
 	    .attr("height", height + margin.top + margin.bottom)
 	  .append("g")
