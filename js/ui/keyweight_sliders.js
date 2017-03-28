@@ -17,8 +17,9 @@ function initialize(origKeyWeights) {
 	//add sliders with values based on origKeyWeights
 	slidersHTML = "";
 	for (let i = 0; i < origKeyWeights.length; i++){
-		slidersHTML += '<input class="weight-slider" type="range" name="' + i +
-						'" min="0", max="4" step=".1" value=' + origKeyWeights[i] + '>';
+		slidersHTML += '<div class="slider-group"><input class="weight-slider" type="range" name="' + i +
+						'" min="0", max="4" step=".1" value=' + origKeyWeights[i] + '><span id=' + i +
+						'val >' + origKeyWeights[i] + '</span></div>';
 	}
 
 	$('#key-weights').html(slidersHTML);
@@ -27,6 +28,8 @@ function initialize(origKeyWeights) {
     	const keyIndex = Number(this.name);
     	const newValue = Number(this.value);
     	callListeners(keyIndex, newValue);
+
+    	$('#' + keyIndex + 'val').html(newValue);
 	});
 
 }

@@ -36,10 +36,15 @@ svg {
   bottom: 30px;
   height: 250px; }
 
-#key-weights input {
+#slider-group {
   width: 70%;
   max-width: 500px;
   margin: 0 auto; }
+
+input.weight-slider {
+  width: 350px;
+  float: left;
+  margin-right: 10px; }
 
 .keyboard-container {
   margin: 0px;
