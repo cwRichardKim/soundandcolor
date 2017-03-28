@@ -24,7 +24,7 @@ const svg_keys = [
 let x;
 let y;
 let svg;
-let margin = {top: 40, right: 20, bottom: 30, left: 40},
+let margin = {top: 40, right: 20, bottom: 10, left: 40},
 	width = key_width * 11 + margin.left + margin.right,
 	height = key_height + margin.top + margin.bottom;
 const on_screen_keys = {
@@ -86,6 +86,7 @@ function initialize() {
         .range([height, 0]);
 
 	svg = d3.select("#keyboard").append("svg")
+      .attr("viewbox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom))
 	    .attr("width", width + margin.left + margin.right)
 	    .attr("height", height + margin.top + margin.bottom)
 	  .append("g")

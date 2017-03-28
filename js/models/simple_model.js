@@ -19,6 +19,7 @@ function key_index(key, scale) {
 }
 
 let simple_key_weights = [1.5, 0.1, 0.6, 0.3, 0.8, 0.1, 0.2];
+
 let out_of_key_weight = 0.05;
 const major_intervals = [2,2,1,2,2,2,1]
 
@@ -42,10 +43,18 @@ const mode_bias = {
   "Locrian": 0.95
 };
 
+function updateKeyWeight(keyIndex, newValue) {
+  simple_key_weights[keyIndex] = newValue;
+
+  console.log(simple_key_weights);
+}
+
+
 function mode_weights(mode) {
-    if (typeof(mode_weights.memo) == 'undefined' ||
-        typeof(mode_weights.memo[mode]) == 'undefined') {
-        if (!mode_weights.memo) mode_weights.memo = {};
+  // console.log(simple_key_weights);
+  //  if (typeof(mode_weights.memo) == 'undefined' ||
+  //      typeof(mode_weights.memo[mode]) == 'undefined') {
+  //      if (!mode_weights.memo) mode_weights.memo = {};
         var mode_index = modalities.indexOf(mode);
         var weight_vector = Array.apply(null, Array(12)).map(Number.prototype.valueOf,
                                                          out_of_key_weight)
@@ -54,9 +63,10 @@ function mode_weights(mode) {
             weight_vector[offset] = simple_key_weights[i];
             offset += major_intervals[(mode_index + i) % 8];
         }
-        mode_weights.memo[mode] = weight_vector;
-    }
-    return mode_weights.memo[mode];
+  //      mode_weights.memo[mode] = weight_vector;
+  return weight_vector;
+  //  }
+  //  return mode_weights.memo[mode];
 }
 
 function modeScaleValue(heats, mode, scale) {
@@ -97,5 +107,7 @@ function modeScaleValues(heats) {
 }
 
 module.exports = {
-    modeScaleValues
+    modeScaleValues,
+    updateKeyWeight,
+    getKeyWeights: () => simple_key_weights
 }

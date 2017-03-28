@@ -32,8 +32,23 @@ svg {
   width: 50%;
   margin: auto; }
 
+#key-weights {
+  bottom: 30px;
+  height: 250px; }
+
+#slider-group {
+  width: 70%;
+  max-width: 500px;
+  margin: 0 auto; }
+
+input.weight-slider {
+  width: 350px;
+  float: left;
+  margin-right: 10px; }
+
 .keyboard-container {
-  margin: 0px; }
+  margin: 0px;
+  margin-bottom: 10px; }
 
 .x.axis path {
   fill: steelblue;
@@ -157,7 +172,8 @@ body {
   div.menu__graphs {
     float: none;
     width: 100%;
-    min-height: 0; }
+    min-height: 0;
+    overflow-y: scroll; }
     ul.menu__list--active,
     div.menu__graphs--active {
       transform: translate3d(0, 0, 0); }
