@@ -1,4 +1,4 @@
-const key_width = 50;
+const key_width = document.getElementById("keyboard").clientWidth / 11;
 const key_height = 150;
 const svg_keys = [
 	{ id: "octave-3-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "a", stroke: "#555555", fill: "#FFFFF7", x: 0, y: 0, width: key_width, height: key_height},
@@ -24,7 +24,7 @@ const svg_keys = [
 let x;
 let y;
 let svg;
-let margin = {top: 40, right: 20, bottom: 10, left: 40},
+let margin = {top: 10, right: 0, bottom: 10, left: 0},
 	width = key_width * 11 + margin.left + margin.right,
 	height = key_height + margin.top + margin.bottom;
 const on_screen_keys = {
@@ -49,6 +49,43 @@ const on_screen_keys = {
 };
 
 let KEYLISTMAX = 10;
+
+function redraw() {
+  var keyboardDiv = document.getElementById("keyboard");
+  var width = keyboardDiv.clientWidth;
+  var keyWidth = (width / 11);
+
+  var scaleFactor = keyWidth / d3.select(".white-key").attr("width");
+
+  d3.selectAll(".white-key")
+    .attr("x", function(d) {
+      var currX = d.x;
+      d.x = currX * scaleFactor;
+      d.width = keyWidth;
+      return d.x;
+    })
+    .attr("width", function(d) {
+      return keyWidth;
+    });
+
+  d3.selectAll(".black-key")
+    .attr("x", function(d) {
+      var currX = d.x;
+      d.x = currX * scaleFactor;
+      d.width = (keyWidth / 2);
+      return d.x;
+    })
+    .attr("width", function(d) {
+      return (keyWidth / 2);
+    });
+
+  d3.selectAll(".keyboard-text")
+    .attr("x", function(d) {
+      return (d3.select(this).attr("x") * scaleFactor);
+    })
+}
+
+window.addEventListener("resize", redraw);
 
 function updateKeyboardUI(octave_key, is_key_down, holding) {
   if (octave_key != null) {
@@ -87,8 +124,8 @@ function initialize() {
 
 	svg = d3.select("#keyboard").append("svg")
       .attr("viewbox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom))
-	    .attr("width", width + margin.left + margin.right)
-	    .attr("height", height + margin.top + margin.bottom)
+	    .attr("width", "100%")
+	    // .attr("height", height + margin.top + margin.bottom)
 	  .append("g")
 	    .attr("transform",
 			  "translate(" + margin.left + "," + margin.top + ")");
@@ -115,6 +152,7 @@ function initialize() {
   svg.selectAll(".black-key .white-key")
   	.data(svg_keys)
   	.enter().append("text")
+    .attr("class", "keyboard-text")
   	.attr("x", function(d) {
   		if(d.class.includes("black-key")){
   			return d.x + key_width / 4 - 5;
