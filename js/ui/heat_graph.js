@@ -1,7 +1,7 @@
 // In the process of refactoring this file into a module
 
-const CELL_WIDTH = 35;
-const CELL_HEIGHT = 35;
+const CELL_WIDTH = 25;
+const CELL_HEIGHT = 25;
 const modalities = ["Ionian",
                     "Dorian",
                     "Phrygian",
@@ -24,8 +24,8 @@ const key_indices = {
   "B": 11
 }
 const margin = {top: 40, right: 0, bottom: 30, left: 80};
-const width = 500;
-const height = 300 - margin.top - margin.bottom;
+const width = CELL_WIDTH * 12;
+const height = CELL_HEIGHT * 7;
 let heat_values;
 let svg;
 let heat_data;
@@ -53,7 +53,10 @@ function determine_x(key_name) {
 function generate_heat_values() {
   let ret = [];
   for (var i = 0; i < (7); i++){
-  	svg.append("text").attr("y", determine_y(modalities[i]) + 15).attr("x", -margin.left).text(modalities[i])
+  	svg.append("text").attr("y", determine_y(modalities[i]) + 15)
+                      .attr("x", -5)
+                      .text(modalities[i])
+                      .attr("text-anchor", "end")
   	for (var key_name in key_indices){
   		if(i == 0){
   			svg.append("text").attr("y", determine_y(modalities[i]) - 10).attr("x", determine_x(key_name) + 10).text(key_name)
