@@ -390,8 +390,8 @@ module.exports = {
 },{}],6:[function(require,module,exports){
 // In the process of refactoring this file into a module
 
-const CELL_WIDTH = 35;
-const CELL_HEIGHT = 35;
+const CELL_WIDTH = 25;
+const CELL_HEIGHT = 25;
 const modalities = ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"];
 const key_indices = {
   "C": 0,
@@ -408,8 +408,8 @@ const key_indices = {
   "B": 11
 };
 const margin = { top: 40, right: 0, bottom: 30, left: 80 };
-const width = 500;
-const height = 300 - margin.top - margin.bottom;
+const width = CELL_WIDTH * 12;
+const height = CELL_HEIGHT * 7;
 let heat_values;
 let svg;
 let heat_data;
@@ -437,7 +437,7 @@ function determine_x(key_name) {
 function generate_heat_values() {
   let ret = [];
   for (var i = 0; i < 7; i++) {
-    svg.append("text").attr("y", determine_y(modalities[i]) + 15).attr("x", -margin.left).text(modalities[i]);
+    svg.append("text").attr("y", determine_y(modalities[i]) + 15).attr("x", -5).text(modalities[i]).attr("text-anchor", "end");
     for (var key_name in key_indices) {
       if (i == 0) {
         svg.append("text").attr("y", determine_y(modalities[i]) - 10).attr("x", determine_x(key_name) + 10).text(key_name);
@@ -452,17 +452,18 @@ function generate_heat_values() {
   return ret;
 }
 
+let margin_k = { top: 40, right: 20, bottom: 30, left: 40 };
+let width_k = d3.select("#key-graph").node().getBoundingClientRect().width - margin_k.left - margin_k.right;
+let height_k = 300 - margin_k.top - margin_k.bottom;
+
 function initialize() {
   heat_data = [{ "name": "C", "val": 0 }, { "name": "C#", "val": 0 }, { "name": "D", "val": 0 }, { "name": "D#", "val": 0 }, { "name": "E", "val": 0 }, { "name": "F", "val": 0 }, { "name": "F#", "val": 0 }, { "name": "G", "val": 100 }, { "name": "G#", "val": 0 }, { "name": "A", "val": 0 }, { "name": "A#", "val": 0 }, { "name": "B", "val": 0 }];
-  let margin_k = { top: 40, right: 20, bottom: 30, left: 40 };
-  let width_k = d3.select("#key-graph").node().getBoundingClientRect().width - margin_k.left - margin_k.right;
-  let height_k = 300 - margin_k.top - margin_k.bottom;
 
   x_k = d3.scaleBand().range([0, width_k]).padding(0.1);
 
   y_k = d3.scaleLinear().range([height_k, 0]);
 
-  svg_k = d3.select("#key-graph").append("svg").attr("width", width_k + margin_k.left + margin_k.right).attr("height", height_k + margin_k.top + margin_k.bottom).append("g").attr("transform", "translate(" + margin_k.left + "," + margin_k.top + ")");
+  svg_k = d3.select("#key-graph").append("svg").attr("id", "key-bar-graph").attr("width", width_k + margin_k.left + margin_k.right).attr("height", height_k + margin_k.top + margin_k.bottom).append("g").attr("transform", "translate(" + margin_k.left + "," + margin_k.top + ")");
 
   svg = d3.select("#heat-graph").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   heat_values = generate_heat_values();
@@ -494,7 +495,7 @@ function initialize() {
     return height - y_k(d.val);
   });
 
-  svg_k.append("g").attr("transform", "translate(0," + height_k + ")").attr("font-family", "helvetica").call(d3.axisBottom(x_k));
+  svg_k.append("g").attr("id", "bottom-marg").attr("transform", "translate(0," + height_k + ")").attr("font-family", "helvetica").call(d3.axisBottom(x_k));
 }
 
 function updateHeatPlot(weights) {
@@ -512,19 +513,40 @@ function updateHeatPlot(weights) {
   }
 }
 
+function redraw() {
+  var newWidth = d3.select("#key-graph").node().getBoundingClientRect().width - margin_k.left - margin_k.right;
+
+  svg_k = d3.select("#key-bar-graph");
+  svg_k.attr("width", newWidth + margin_k.left + margin_k.right);
+
+  x_k = d3.scaleBand().range([0, newWidth]).padding(0.1);
+
+  x_k.domain(heat_data.map(function (d) {
+    return d.name;
+  }));
+
+  d3.selectAll(".bar").attr("x", function (d) {
+    return x_k(d.name);
+  }).attr("width", x_k.bandwidth());
+
+  d3.select("#bottom-marg").call(d3.axisBottom(x_k));
+}
+
+window.addEventListener("resize", redraw);
+
 module.exports = {
   initialize,
   update: updateHeatPlot
 };
 
 },{}],7:[function(require,module,exports){
-const key_width = 50;
+const key_width = document.getElementById("keyboard").clientWidth / 11;
 const key_height = 150;
 const svg_keys = [{ id: "octave-3-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "a", stroke: "#555555", fill: "#FFFFF7", x: 0, y: 0, width: key_width, height: key_height }, { id: "octave-3-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "s", stroke: "#555555", fill: "#FFFFF7", x: key_width, y: 0, width: key_width, height: key_height }, { id: "octave-3-E-key", class: "piano-key white-key", data_key: "E", keyboard_key: "d", stroke: "#555555", fill: "#FFFFF7", x: key_width * 2, y: 0, width: key_width, height: key_height }, { id: "octave-3-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "f", stroke: "#555555", fill: "#FFFFF7", x: key_width * 3, y: 0, width: key_width, height: key_height }, { id: "octave-3-G-key", class: "piano-key white-key", data_key: "G", keyboard_key: "g", stroke: "#555555", fill: "#FFFFF7", x: key_width * 4, y: 0, width: key_width, height: key_height }, { id: "octave-3-A-key", class: "piano-key white-key", data_key: "A", keyboard_key: "h", stroke: "#555555", fill: "#FFFFF7", x: key_width * 5, y: 0, width: key_width, height: key_height }, { id: "octave-3-B-key", class: "piano-key white-key", data_key: "B", keyboard_key: "j", stroke: "#555555", fill: "#FFFFF7", x: key_width * 6, y: 0, width: key_width, height: key_height }, { id: "octave-3-C#-key", class: "piano-key black-key", data_key: "C#", keyboard_key: "w", stroke: "#555555", fill: "#4B4B4B", x: key_width * .75, y: 0, width: key_width / 2, height: key_height * .75 }, { id: "octave-3-D#-key", class: "piano-key black-key", data_key: "D#", keyboard_key: "e", stroke: "#555555", fill: "#4B4B4B", x: key_width * 1.75, y: 0, width: key_width / 2, height: key_height * .75 }, { id: "octave-3-F#-key", class: "piano-key black-key", data_key: "F#", keyboard_key: "t", stroke: "#555555", fill: "#4B4B4B", x: key_width * 3.75, y: 0, width: key_width / 2, height: key_height * .75 }, { id: "octave-3-G#-key", class: "piano-key black-key", data_key: "G#", keyboard_key: "y", stroke: "#555555", fill: "#4B4B4B", x: key_width * 4.75, y: 0, width: key_width / 2, height: key_height * .75 }, { id: "octave-3-A#-key", class: "piano-key black-key", data_key: "A#", keyboard_key: "u", stroke: "#555555", fill: "#4B4B4B", x: key_width * 5.75, y: 0, width: key_width / 2, height: key_height * .75 }, { id: "octave-4-C-key", class: "piano-key white-key", data_key: "C", keyboard_key: "k", stroke: "#555555", fill: "#FFFFF7", x: key_width * 7, y: 0, width: key_width, height: key_height }, { id: "octave-4-D-key", class: "piano-key white-key", data_key: "D", keyboard_key: "l", stroke: "#555555", fill: "#FFFFF7", x: key_width * 8, y: 0, width: key_width, height: key_height }, { id: "octave-4-E-key", class: "piano-key white-key", data_key: "E", keyboard_key: ";", stroke: "#555555", fill: "#FFFFF7", x: key_width * 9, y: 0, width: key_width, height: key_height }, { id: "octave-4-F-key", class: "piano-key white-key", data_key: "F", keyboard_key: "\'", stroke: "#555555", fill: "#FFFFF7", x: key_width * 10, y: 0, width: key_width, height: key_height }, { id: "octave-4-C#-key", class: "piano-key black-key", data_key: "C#", keyboard_key: "o", stroke: "#555555", fill: "#4B4B4B", x: key_width * 7.75, y: 0, width: key_width / 2, height: key_height * .75 }, { id: "octave-4-D#-key", class: "piano-key black-key", data_key: "D#", keyboard_key: "p", stroke: "#555555", fill: "#4B4B4B", x: key_width * 8.75, y: 0, width: key_width / 2, height: key_height * .75 }];
 let x;
 let y;
 let svg;
-let margin = { top: 40, right: 20, bottom: 10, left: 40 },
+let margin = { top: 10, right: 0, bottom: 10, left: 0 },
     width = key_width * 11 + margin.left + margin.right,
     height = key_height + margin.top + margin.bottom;
 const on_screen_keys = {
@@ -549,6 +571,38 @@ const on_screen_keys = {
 };
 
 let KEYLISTMAX = 10;
+
+function redraw() {
+  var keyboardDiv = document.getElementById("keyboard");
+  var width = keyboardDiv.clientWidth;
+  var keyWidth = width / 11;
+
+  var scaleFactor = keyWidth / d3.select(".white-key").attr("width");
+
+  d3.selectAll(".white-key").attr("x", function (d) {
+    var currX = d.x;
+    d.x = currX * scaleFactor;
+    d.width = keyWidth;
+    return d.x;
+  }).attr("width", function (d) {
+    return keyWidth;
+  });
+
+  d3.selectAll(".black-key").attr("x", function (d) {
+    var currX = d.x;
+    d.x = currX * scaleFactor;
+    d.width = keyWidth / 2;
+    return d.x;
+  }).attr("width", function (d) {
+    return keyWidth / 2;
+  });
+
+  d3.selectAll(".keyboard-text").attr("x", function (d) {
+    return d3.select(this).attr("x") * scaleFactor;
+  });
+}
+
+window.addEventListener("resize", redraw);
 
 function updateKeyboardUI(octave_key, is_key_down, holding) {
   if (octave_key != null) {
@@ -576,7 +630,9 @@ function initialize() {
   x = d3.scaleBand().range([0, width]).padding(0.1);
   y = d3.scaleLinear().range([height, 0]);
 
-  svg = d3.select("#keyboard").append("svg").attr("viewbox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom)).attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  svg = d3.select("#keyboard").append("svg").attr("viewbox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom)).attr("width", "100%")
+  // .attr("height", height + margin.top + margin.bottom)
+  .append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   svg.selectAll(".key").data(svg_keys).enter().append("rect").attr("class", function (d) {
     return d.class;
@@ -596,7 +652,7 @@ function initialize() {
     return d.fill;
   });
 
-  svg.selectAll(".black-key .white-key").data(svg_keys).enter().append("text").attr("x", function (d) {
+  svg.selectAll(".black-key .white-key").data(svg_keys).enter().append("text").attr("class", "keyboard-text").attr("x", function (d) {
     if (d.class.includes("black-key")) {
       return d.x + key_width / 4 - 5;
     }
