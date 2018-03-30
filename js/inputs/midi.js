@@ -40,8 +40,8 @@ function notePressHandler(note, down) {
 
 function midiHandler (msg) {
   if (msg.data && msg.data.length >= 3) {
-    let isKeyDown = msg.data[0] == 144;
-    let isKeyUp = msg.data[0] == 128;
+    let isKeyDown = msg.data[0] == 144 && msg.data[2] !== 0;
+    let isKeyUp = msg.data[0] == 128 || msg.data[2] === 0;
     let keyIndex = msg.data[1];
     let note = keyIndex in MIDIMAP ? MIDIMAP[keyIndex] : null;
     let velocity = msg.data[2];

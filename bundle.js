@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 const keyboard = require('./js/inputs/keyboard');
 const midi_input = require('./js/inputs/midi');
 const midi_sound = require('./js/ui/midi_sound');
@@ -150,8 +150,8 @@ function notePressHandler(note, down) {
 
 function midiHandler(msg) {
   if (msg.data && msg.data.length >= 3) {
-    let isKeyDown = msg.data[0] == 144;
-    let isKeyUp = msg.data[0] == 128;
+    let isKeyDown = msg.data[0] == 144 && msg.data[2] !== 0;
+    let isKeyUp = msg.data[0] == 128 || msg.data[2] === 0;
     let keyIndex = msg.data[1];
     let note = keyIndex in MIDIMAP ? MIDIMAP[keyIndex] : null;
     let velocity = msg.data[2];
@@ -182,6 +182,7 @@ module.exports = {
 
 },{}],4:[function(require,module,exports){
 const DECAY_RATE = -0.001;
+const HOLDING_MULTIPLIER = 4.;
 
 // heats with incorporated octaves
 // format: {C: {0: 0., 1: 0., ...}, C#: {...}, ...}
@@ -253,7 +254,7 @@ function decayNotes(holding) {
       if (!decayNotes.holding || !decayNotes.holding.includes(o_i + "-" + n_i)) {
         octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt);
       } else if (decayNotes.holding) {
-        octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt / 4);
+        octaved_key_heats[n_i][o_i] = decayHeat(octaved_key_heats[n_i][o_i], dt / HOLDING_MULTIPLIER);
       }
     }
   }
