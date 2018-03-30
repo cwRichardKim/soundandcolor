@@ -1,7 +1,7 @@
 // In the process of refactoring this file into a module
 
-const CELL_WIDTH = 35;
-const CELL_HEIGHT = 35;
+const CELL_WIDTH = 25;
+const CELL_HEIGHT = 25;
 const modalities = ["Ionian",
                     "Dorian",
                     "Phrygian",
@@ -24,8 +24,8 @@ const key_indices = {
   "B": 11
 }
 const margin = {top: 40, right: 0, bottom: 30, left: 80};
-const width = 500;
-const height = 300 - margin.top - margin.bottom;
+const width = CELL_WIDTH * 12;
+const height = CELL_HEIGHT * 7;
 let heat_values;
 let svg;
 let heat_data;
@@ -53,7 +53,10 @@ function determine_x(key_name) {
 function generate_heat_values() {
   let ret = [];
   for (var i = 0; i < (7); i++){
-  	svg.append("text").attr("y", determine_y(modalities[i]) + 15).attr("x", -margin.left).text(modalities[i])
+  	svg.append("text").attr("y", determine_y(modalities[i]) + 15)
+                      .attr("x", -5)
+                      .text(modalities[i])
+                      .attr("text-anchor", "end")
   	for (var key_name in key_indices){
   		if(i == 0){
   			svg.append("text").attr("y", determine_y(modalities[i]) - 10).attr("x", determine_x(key_name) + 10).text(key_name)
@@ -67,6 +70,11 @@ function generate_heat_values() {
   }
   return ret;
 }
+
+let margin_k = {top: 40, right: 20, bottom: 30, left: 40};
+let width_k = d3.select("#key-graph").node().getBoundingClientRect().width
+        - margin_k.left - margin_k.right;
+let height_k = 300 - margin_k.top - margin_k.bottom;
 
 function initialize() {
   heat_data = [
@@ -83,10 +91,6 @@ function initialize() {
     {"name": "A#", "val": 0},
     {"name": "B", "val" : 0}
   ]
-  let margin_k = {top: 40, right: 20, bottom: 30, left: 40};
-  let width_k = d3.select("#key-graph").node().getBoundingClientRect().width
-          - margin_k.left - margin_k.right;
-  let height_k = 300 - margin_k.top - margin_k.bottom;
 
   x_k = d3.scaleBand()
     .range([0, width_k])
@@ -96,6 +100,7 @@ function initialize() {
     .range([height_k, 0]);
 
   svg_k = d3.select("#key-graph").append("svg")
+    .attr("id", "key-bar-graph")
     .attr("width", width_k + margin_k.left + margin_k.right)
     .attr("height", height_k + margin_k.top + margin_k.bottom)
     .append("g")
@@ -161,6 +166,7 @@ function initialize() {
     })
 
   svg_k.append("g")
+    .attr("id", "bottom-marg")
     .attr("transform", "translate(0," + height_k + ")")
     .attr("font-family", "helvetica")
     .call(d3.axisBottom(x_k));
@@ -180,6 +186,32 @@ function updateHeatPlot(weights) {
 		key_bar.attr("y", 230 - (value * 50))
 	}
 }
+
+function redraw() {
+  var newWidth = d3.select("#key-graph").node().getBoundingClientRect().width
+        - margin_k.left - margin_k.right;
+
+  svg_k = d3.select("#key-bar-graph")
+  svg_k.attr("width", newWidth + margin_k.left + margin_k.right);
+
+  x_k = d3.scaleBand()
+    .range([0, newWidth])
+    .padding(0.1);
+
+  x_k.domain(heat_data.map(function(d) {
+    return d.name;
+  }));
+
+  d3.selectAll(".bar")
+    .attr("x", function(d){
+      return x_k(d.name);
+    })
+    .attr("width", x_k.bandwidth());
+  
+  d3.select("#bottom-marg").call(d3.axisBottom(x_k));
+}
+
+window.addEventListener("resize", redraw);
 
 module.exports = {
     initialize,

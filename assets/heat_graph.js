@@ -63,3 +63,19 @@ svg.append("g")
   .attr("transform", "translate(0," + height + ")")
   .attr("font-family", "helvetica")
   .call(d3.axisBottom(x));
+
+function redraw() {
+	console.log("redraw called")
+	var keyDiv = document.getElementById("key-graph");
+	var width = keyDiv.clientWidth;
+	x = d3.scaleBand()
+          .range([0, width])
+          .padding(0.1);
+
+  	x.domain(heat_data.map(function(d) { return d.name; }));
+
+  	d3.selectAll(".bar")
+  		.attr("x", function(d) { return x(d.name); })
+}
+
+window.addEventListener("resize", redraw);

@@ -31,19 +31,51 @@ svg {
 	width: 100%;
 }
 
+#reporting-panel {
+  overflow-y: scroll;
+}
+
 #key-graph {
-	width: 50%;
+	width: 100%;
 	margin: auto;
 	margin-bottom: 20px;
+  background-color: white;
+}
+
+#heat-graph h1 {
+  color: black;
+  padding: 10px;
+  font-style:italic;
 }
 
 #heat-graph {
-	width: 50%;
+	width: 100%;
 	margin: auto;
+  background-color:white;
+}
+
+#key-weights {
+  bottom: 30px;
+  height: 250px;
+  max-width:530px;
+  margin: 0 auto;
+}
+
+.slider-group {
+  
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+input.weight-slider{
+  width: 350px;
+  float: left;
+  margin-right: 10px;
 }
 
 .keyboard-container {
 	margin: 0px;
+  margin-bottom: 10px;
 }
 
 #keyboard {
@@ -227,6 +259,7 @@ body {
   float: none;
   width: 100%;
   min-height: 0;
+  overflow-y: scroll;
 
    &--active {
      transform: translate3d(0, 0, 0);
@@ -243,7 +276,7 @@ body {
  }
 
  .menu__graphs {
-   height: 25vh;
+   
    transform: translate3d(100%, 0, 0);
  }
 }
